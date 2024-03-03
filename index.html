@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>audio recorder cz</title>
+</head>
+<body>
+    <input type="button" id="start" value="开始录音"/>
+    <input type="button" id="stop" value="停止录音"/>
+    <audio id="audio" controls></audio>
+
+    <script type="text/javascript">
+        // 定义MediaRecorder对象
+        let recorder;
+        // 定义录音时长
+        let duration = 5000;
+        // 定义录音格式
+        let mimeType = 'audio/wav';
+
+        // 点击开始按钮开始录音
+        document.getElementById('start').addEventListener('click', function() {
+            navigator.mediaDevices.getUserMedia({audio: true})
+                .then(stream => {
+                    // 初始化MediaRecorder对象
+                    recorder = new MediaRecorder(stream, {mimeType: mimeType});
+
+                    // 录音时间到达设定值时自动停止录音
+                    recorder.onstop = function(e) {
+                        let audioBlob = new Blob(chunks, {type: mimeType});
+                        let formData = new FormData();
+                        formData.append('audio', audioBlob, 'audio.wav');
+
+                        // 将Blob对象和formData对象上传到服务器
+                        fetch('/index', {method: 'POST', body: formData})
+                            .then(response => {
+                                console.log(response.text());
+                            });
+                    }, error=>{alert('出错，请确保已允许浏览器获取录音全新啊')};
+
+                    // 开始录音
+                    recorder.start();
+
+                    // 指定录音时间结束后自动停止
+                    setTimeout(() => {
+                        recorder.stop();
+                    }, duration);
+                });
+        });
+
+        // 点击停止按钮手动停止录音
+        document.getElementById('stop').addEventListener('click', function() {
+            if (recorder) {
+                recorder.stop();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>audio recorder cz</title>
+</head>
+<body>
+	<div id="content" style="width: 1440; height: 3200;">
+		<audio id="audio" controls></audio>
+		<br />
+		<input type="button" id="start" value="开始录音"/>
+		<input type="button" id="stop" value="停止录音"/>
+		<br /><br />
+		性别：<input name ="gender" type ="radio" value = "1" >男&nbsp;
+			<input name ="gender" type ="radio" value = "0" >女<br>
+		<br />
+		年龄：<input type="text" name="age" id="age" value=""/>
+		<br />
+		<p>--症状--</p>
+		发热：<input name ="isfever" type ="radio"   value = "1" >是&nbsp;
+			<input name ="isfever" type ="radio"   value = "0" >否<br>
+		<br />
+		是否抽烟：<input name ="issmoking" type ="radio"   value = "1" >是&nbsp;
+			<input name ="issmoking" type ="radio"   value = "0" >否<br>
+		<br />
+		<button><input type="submit" id="submit_table" name="" onclick="feath_data()"/></button>
+	</div>
+    <script type="text/javascript">
+        var data = {};
+		function feath_data(){
+			var isubmit = 1;
+			var submit_message = "";
+			var genders = document.getElementsByName('gender');
+			// console.log(genders[0].checked+"，"+genders[1].checked);
+			if (genders[0].checked == false){
+				if (genders[1].checked == false){
+					isubmit = 0;
+					submit_message += "请选择你的性别。\n";
+				}else{
+					data['gender'] = 0;
+				}
+			}else{
+				if (genders[1].checked == true){
+					isubmit = 0;
+					submit_message += "请选择您的生理性别，并且仅选择一个。\n";
+				}else{
+					data['gender'] = 1;
+				};
+			}
+			data['age'] = parseInt(document.getElementById('age').value);
+			if(data['age'] < 0 || data['age'] > 150 || data['age']==''){
+				submit_message += "请正确输入您的年龄，0到150之间的整数值。";
+			}
+			var issmoking = document.getElementsByName('issmoking');
+			// console.log(issmoking[0].checked+"，"+issmoking[1].checked);
+			if (issmoking[0].checked == false){
+				if (issmoking[1].checked == false){
+					isubmit = 0;
+					submit_message += "请选择你的抽烟状况。\n";
+				}else{
+					data['issmoking'] = 0;
+				}
+			}else{
+				if (issmoking[1].checked == true){
+					isubmit = 0;
+					submit_message += "请选择您的抽烟状况，并且仅选择一个。\n";
+				}else{
+					data['issmoking'] = 1;
+				};
+			}
+			var isfever = document.getElementsByName('isfever');
+			// console.log(isfever[0].checked+"，"+isfever[1].checked);
+			if (isfever[0].checked == false){
+				if (isfever[1].checked.checked == false){
+					isubmit = 0;
+					submit_message += "请选择你的发烧状况。\n";
+				}else{
+					data['isfever'] = 0;
+				}
+			}else{
+				if (isfever[1].checked == true){
+					isubmit = 0;
+					submit_message += "请选择您的发烧状况，并且仅选择一个。\n";
+				}else{
+					data['isfever'] = 1;
+				};
+			}
+			console.log(data);
+			if (isubmit == 1){
+				console.log(submit_message+"填写完成");
+				var jsonData = JSON.stringify(data);
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', '/getdata', true);
+				xhr.setRequestHeader('Content-type', 'application/json');
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState === 4 && xhr.status === 200) {
+						var response = JSON.parse(xhr.responseText);
+						console.log(response);
+					}
+				};
+				xhr.send(jsonData);
+			}else{
+				alert("出错，请重新填写表单："+submit_message);
+			}
+		}
+    </script>
+</body>
+</html>

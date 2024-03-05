@@ -4,19 +4,28 @@
 # @Author: ZhaoKe
 # @File : main.py
 # @Software: PyCharm
-from flask import Flask, request
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
 
+@app.route('/')
+def index():
+    return render_template("./index.html")
+    # return "<p>hello world</p><br><p>ok!</p>"
+
+
 # 定义上传音频文件的路由
-@app.route('/index', methods=['POST'])
+@app.route('/getdata', methods=['POST'])
 def upload():
-    audio_file = request.files['audio']
-    # 将音频文件保存到服务器上的指定路径
-    audio_file.save('./audio/test_audio_000.wav')
-    return '上传成功'
+    info_table = request.get_json()
+    print(info_table)
+    # audio_file = request.files['audio']
+    # # 将音频文件保存到服务器上的指定路径
+    # audio_file.save('./audio/test_audio_000.wav')
+    response = {'message': 'Data received successfully'}
+    return jsonify(response)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', debug=True, port=8000)

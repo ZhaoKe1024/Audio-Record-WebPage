@@ -15,17 +15,20 @@
 		<input type="button" id="stop" value="停止录音"/>
 		<br /><br />
 		性别：<input name ="gender" type ="radio" value = "1" >男&nbsp;
-			<input name ="gender" type ="radio" value = "0" >女<br>
-		<br />
+			<input name ="gender" type ="radio" value = "0" >女
+		<br><br />
 		年龄：<input type="text" name="age" id="age" value=""/>
 		<br />
 		<p>--症状--</p>
-		发热：<input name ="isfever" type ="radio"   value = "1" >是&nbsp;
-			<input name ="isfever" type ="radio"   value = "0" >否<br>
-		<br />
+		<br>
+		病症：<input type="text" name="disease" id="disease" value="输入您的症状,如果健康则填\"0\"或\"健康\""/>
+		<br /><br />
 		是否抽烟：<input name ="issmoking" type ="radio"   value = "1" >是&nbsp;
-			<input name ="issmoking" type ="radio"   value = "0" >否<br>
-		<br />
+			<input name ="issmoking" type ="radio"   value = "0" >否
+		<br><br />
+		发热：<input name ="isfever" type ="radio"   value = "1" >是&nbsp;
+			<input name ="isfever" type ="radio"   value = "0" >否
+		<br><br />
 		<button><input type="submit" id="submit_table" name="" onclick="feath_data()"/></button>
 	</div>
     <script type="text/javascript">
@@ -52,7 +55,13 @@
 			}
 			data['age'] = parseInt(document.getElementById('age').value);
 			if(data['age'] < 0 || data['age'] > 150 || data['age']==''){
+				isubmit = 0;
 				submit_message += "请正确输入您的年龄，0到150之间的整数值。";
+			}
+			data['disease'] = document.getElementById('disease').value;
+			if(data['disease'] ==''){
+				submit = 0;
+				submit_message += "请输入您的症状。";
 			}
 			var issmoking = document.getElementsByName('issmoking');
 			// console.log(issmoking[0].checked+"，"+issmoking[1].checked);
@@ -93,7 +102,7 @@
 				console.log(submit_message+"填写完成");
 				var jsonData = JSON.stringify(data);
 				var xhr = new XMLHttpRequest();
-				xhr.open('POST', '/getdata', true);
+				xhr.open('POST', '/test', true);
 				xhr.setRequestHeader('Content-type', 'application/json');
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState === 4 && xhr.status === 200) {

@@ -18,13 +18,16 @@ def index():
 # 定义上传音频文件的路由
 @app.route('/getdata', methods=['POST'])
 def upload():
-    info_table = request.get_json()
-    print(info_table)
-    # audio_file = request.files['audio']
-    # # 将音频文件保存到服务器上的指定路径
-    # audio_file.save('./audio/test_audio_000.wav')
-    response = {'message': 'Data received successfully'}
-    return jsonify(response)
+	info_table = request.get_json()
+	print(info_table)
+	# audio_file = request.files['audio']
+	# # 将音频文件保存到服务器上的指定路径
+	# audio_file.save('./audio/test_audio_000.wav')
+	resp_message = "Data received successfully!\n"
+	insert_use_dict(info_table)
+	resp_message += "Data insert into database successfully!"
+	response = {'message': resp_message}
+	return jsonify(response)
 
 
 if __name__ == '__main__':

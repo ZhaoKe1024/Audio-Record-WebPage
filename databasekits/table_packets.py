@@ -15,14 +15,14 @@ pwd = "zkGcx_0703"
 
 class Item(Base):
     __tablename__ = 'cough_main'
-    id = Column(Integer, primary_key=True)  # primary key, id
+    id = Column(Integer, primary_key=True)  # primary key, id  # Even if this field is not used, it must be explicitly defined, otherwise it cannot be mapped to the data table.
     filename = Column(String(32))  # # 文件名，自然数
     # health = Column(String(16))  # 是否健康，二值标记
-    disease = Column(String(64))  # 疾病类别，自然数标记
-    gender = Column(String(128))  # 性别  # 0-1 二值
-    age = Column(String(128))  # 年龄  # 二位数
-    issmoking = Column(String(128))  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
-    isfever = Column(String(128))  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
+    disease = Column(SmallInteger())  # 疾病类别，自然数标记
+    gender = Column(Boolean())  # 性别  # 0-1 二值
+    age = Column(SmallInteger())  # 年龄  # 二位数
+    issmoking = Column(Boolean())  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
+    isfever = Column(Boolean())  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
     # from_device = Column(DateTime)  # 采集设备？这个其实是开集识别了  # 自然数
 
     def __repr__(self):
@@ -36,10 +36,11 @@ def test_insert():
 	Session = sessionmaker(bind=ENGINE)
 	session = Session()
 	try:
-		session.add_all([Item(id=4, filename="test_salalchemy_insert_2", disease=2, gender=0, age=19, issmoking=0, isfever=1)
+		session.add_all([Item(filename="test_no_pkey_0", disease=0, gender=0, age=23, issmoking=1, isfever=0)
 						])
 		session.commit()
 		print("Data insert into database cough_schema table cough_main successfully!")
+		sqlalchemy_test()
 	except Exception as e:
 		print(e)
 

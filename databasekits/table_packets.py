@@ -10,57 +10,50 @@ from sqlalchemy.orm import sessionmaker
 import pandas as pd
 
 Base = declarative_base()
+pwd = "zkGcx_0703"
 
 
 class Item(Base):
-    __tablename__ = 'item'
-    iditem = Column(Integer, primary_key=True)  # primary key, id
-    save_name = Column(String(32))  # # 文件名，自然数
-    health = Column(String(16))  # 是否健康，二值标记
+    __tablename__ = 'cough_main'
+    id = Column(Integer, primary_key=True)  # primary key, id
+    filename = Column(String(32))  # # 文件名，自然数
+    # health = Column(String(16))  # 是否健康，二值标记
     disease = Column(String(64))  # 疾病类别，自然数标记
-    is_smoke = Column(String(128))  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
-    from_device = Column(DateTime)  # 采集设备？这个其实是开集识别了  # 自然数
-    from_gender = Column(String(128))  # 性别  # 0-1 二值
-    from_age = Column(String(128))  # 年龄  # 二位数
+    gender = Column(String(128))  # 性别  # 0-1 二值
+    age = Column(String(128))  # 年龄  # 二位数
+    issmoking = Column(String(128))  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
+    isfever = Column(String(128))  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
+    # from_device = Column(DateTime)  # 采集设备？这个其实是开集识别了  # 自然数
 
     def __repr__(self):
-        return "<Item(category='%s', itemname='%s', idolname='%s', performtime='%s)>" % \
-               self.category, self.itemname, self.idolname, self.performtime
+        return "<Item(filename='%s', disease='%s'>" % \
+               self.filename, self.disease
 
 
-def insert_into_table():
-    # 将数据的每一行创建为一个Item对象
-    data = []
-    with open("temp.csv", encoding='utf-8') as file:
-        line = file.readline()
-        while line:
-            line_s = line.strip("\n").split(',')
-            if line_s[2] == '':
-                data.append(Item(category=line_s[0], itemname=line_s[1], idolname="珈乐Carol"))
-            else:
-                data.append(Item(category=line_s[0], itemname=line_s[1], idolname="珈乐Carol", performtime=line_s[2]))
-            line = file.readline()
-
-    # 建立连接，创建session，提交数据
-    ENGINE = create_engine("mysql+pymysql://root:zksmysql@127.0.0.1:3306/asoul")
-    Base.metadata.create_all(ENGINE)
-    Session = sessionmaker(bind=ENGINE)
-    session = Session()
-    session.add_all(data)
-    session.commit()
+def test_insert():
+	ENGINE = create_engine(f"mysql+pymysql://root:{pwd}@127.0.0.1:3306/cough_schema")
+	Base.metadata.create_all(ENGINE)
+	Session = sessionmaker(bind=ENGINE)
+	session = Session()
+	try:
+		session.add_all([Item(id=4, filename="test_salalchemy_insert_2", disease=2, gender=0, age=19, issmoking=0, isfever=1)
+						])
+		session.commit()
+		print("Data insert into database cough_schema table cough_main successfully!")
+	except Exception as e:
+		print(e)
 
 
 def sqlalchemy_test():
-    ENGINE = create_engine("mysql+pymysql://root:zksmysql@127.0.0.1:3306/asoul")
+    ENGINE = create_engine(f"mysql+pymysql://root:{pwd}@127.0.0.1:3306/cough_schema")
     # 查询2021年9月30日之后的所有item
     sql = """
-        select iditem,itemname,performtime from item where performtime>'2021-9-30'
-        order by performtime desc
+        select * from cough_main;
         """
     df = pd.read_sql(sql, ENGINE)
     print(df)
 
 
 if __name__ == '__main__':
-    sqlalchemy_test()
-
+    test_insert()
+	# sqlalchemy_test()

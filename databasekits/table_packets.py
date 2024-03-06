@@ -30,6 +30,26 @@ class Item(Base):
                self.filename, self.disease
 
 
+# This function is called by the flask service
+def insert_use_dict(sess_dict):
+	ENGINE = create_engine(f"mysql+pymysql://root:{pwd}@127.0.0.1:3306/cough_schema")
+	Base.metadata.create_all(ENGINE)
+	Session = sessionmaker(bind=ENGINE)
+	session = Session()
+	try:
+		fname = "null" if "filename" not in sess_dict else sess_dict['filename']
+		disease_flag = -1 if "disease" not in sess_dict else sess_dict['fisease']
+		session.add_all([Item(filename=fname, disease=disease_flag, gender=sess_dict['gender'], 
+							age=sess_dict['age'], issmoking=sess_dict['issmoking'], isfever=sess_dict['isfever'])
+						])
+		session.commit()
+		print("Data insert into database cough_schema table cough_main successfully!")
+		sqlalchemy_test()
+		return True
+	except Exception as e:
+		print(e)
+
+
 def test_insert():
 	ENGINE = create_engine(f"mysql+pymysql://root:{pwd}@127.0.0.1:3306/cough_schema")
 	Base.metadata.create_all(ENGINE)

@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,10 +6,7 @@
 </head>
 <body>
 	<div id="content" style="width: 1440; height: 3200;">
-		<audio id="audio" controls></audio>
-		<br />
-		<input type="button" id="start" value="开始录音"/>
-		<input type="button" id="stop" value="停止录音"/>
+		<input type="button" id="start" value="开始录音"/><audio id="audio" controls></audio>
 		<br /><br />
 		性别：<input name ="gender" type ="radio" value = "1" >男&nbsp;
 			<input name ="gender" type ="radio" value = "0" >女
@@ -32,9 +26,52 @@
 		<button><input type="submit" id="submit_table" name="" onclick="feath_data()"/></button>
 	</div>
     <script type="text/javascript">
-        var data = {};
+		
+		var formData = new FormData();
+		var isubmit = 0;
+		if (navigator.mediaDevices.getUserMedia){
+			const constraints = {audio: true};
+			navigator.mediaDevices.getUserMedia(constraints).then(
+				stream => {
+					console.log("授权成功!");
+					const recordBtn = document.querySelector("#start");
+					const mediaRecorder = new MediaRecorder(stream);
+					var chunks = [];
+					recordBtn.onclick = () => {
+						if (mediaRecorder.state === "recording"){
+							mediaRecorder.stop();
+							console.log(chunks);
+							mediaRecorder.onstop = e => {
+								var blob = new Blob(chunks, {type: "audio/ogg; codecs=opus"});
+								formData.append("audio", blob, "temp_audio.ogg");
+								isubmit = 1;
+								
+								chunks = [];
+								var audioURL = window.URL.createObjectURL(blob);
+								const audioSrc = document.querySelector("#audio");
+								audioSrc.src = audioURL;
+							};
+							recordBtn.textContent = "record";
+							console.log("录音结束");
+						}else{
+							mediaRecorder.start();
+							mediaRecorder.ondataavailable = function(e){
+								chunks.push(e.data);
+							};
+							console.log(chunks);
+							console.log("录音中...");
+							recordBtn.textContent = "stop";
+						}
+						console.log("录音器状态：", mediaRecorder.state);
+					};
+				}, 
+				() => {console.log("授权失败！")}
+			);
+		}else{
+			console.error("浏览器不支持 getUserMedia");
+		}
+		
 		function feath_data(){
-			var isubmit = 1;
 			var submit_message = "";
 			var genders = document.getElementsByName('gender');
 			// console.log(genders[0].checked+"，"+genders[1].checked);
@@ -101,6 +138,7 @@
 			if (isubmit == 1){
 				console.log(submit_message+"填写完成");
 				var jsonData = JSON.stringify(data);
+				formData.append("jsondata", jsonData)
 				var xhr = new XMLHttpRequest();
 				xhr.open('POST', '/test', true);
 				xhr.setRequestHeader('Content-type', 'application/json');
@@ -110,7 +148,7 @@
 						console.log(response);
 					}
 				};
-				xhr.send(jsonData);
+				xhr.send(formData);
 			}else{
 				alert("出错，请重新填写表单："+submit_message);
 			}

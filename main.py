@@ -4,6 +4,8 @@
 # @Author: ZhaoKe
 # @File : main.py
 # @Software: PyCharm
+import numpy as np
+import soundfile
 from flask import Flask, request, jsonify, render_template
 
 from databasekits.table_packets import insert_use_dict
@@ -22,10 +24,19 @@ def index():
 def upload():
     info_table = request.get_json()
     print(info_table)
+    samples = np.frombuffer(info_table['audio'], dtype=np.int16)
+    fname = "test_audio_000.wav"
+    soundfile.write(
+        f"./audio/{fname}",
+        samples,
+        16000,
+        format='WAV',
+        subtype="FLOAT")
     # audio_file = request.files['audio']
-    # # 将音频文件保存到服务器上的指定路径
+    # 将音频文件保存到服务器上的指定路径
     # audio_file.save('./audio/test_audio_000.wav')
     resp_message = "Data received successfully!\n"
+    info_table['filename'] = fname
     insert_use_dict(info_table)
     resp_message += "Data insert into database successfully!"
     response = {'message': resp_message}

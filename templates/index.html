@@ -43,11 +43,14 @@
 							mediaRecorder.stop();
 							console.log(chunks);
 							mediaRecorder.onstop = e => {
-								var blob = new Blob(chunks, {type: "audio/ogg; codecs=opus"});
+								const blob = new Blob(chunks, {type: "audio/ogg; codecs=opus"});
+								const audioUrl = URL.createObjectURL(audioBlob);
+								// const audio = new Audio(audioUrl);
+								// audio.play();
 								// reader.readAsDataURL(blob);
 								
-								formData.append("audio", blob);
-								// formData.append("audio", encodeURIComponent(reader.result));
+								// formData.append("audio", blob);
+								formData.append("audio", audioUrl, 'file');
 								formData.append("sr", 16000);
 								isubmit = 1;
 								

@@ -60,6 +60,8 @@ def upload():
 
 @app.route('/test', methods=['POST'])
 def print_dcit():
+    # reference https://github.com/smokedsalmonbagel/flaskUploads/blob/main/main.py
+    # https://stackoverflow.com/questions/70733510/send-blob-to-python-flask-and-then-save-it
     print("收到信息！")
     info_table = None
     try:
@@ -68,25 +70,31 @@ def print_dcit():
     except Exception as e:
         print(e)
         print("Error at request.form")
-    print("采样率：", info_table['sr'])
+
     sr = info_table['sr']
+    print("采样率：", sr)
     print("信息：", info_table["jsondata"])
+
     samples = None
     try:
-        audio_data = info_table.get('audio')
-        binary_audio = base64.b64decode(audio_data)
-        samples = np.frombuffer(binary_audio, dtype=np.int32)
-        print("duration：", len(samples))
+        files = request.files
+        file = files.get('file')
+        print(file)
+        # samples = np.frombuffer(audio_data, dtype=np.int32)
+        with open("./audio/test_audio_000.wav", 'wb') as f:
+            f.write(file.content)
+        # print("duration：", len(samples))
     except Exception as e:
         print(e)
         print("Error at samples = np.frombuffer(info_table['audio'], dtype=np.int16)")
-    fname = "test_audio_000.wav"
-    soundfile.write(
-        f"./audio/{fname}",
-        samples,
-        16000,
-        format='WAV',
-        subtype="FLOAT")
+
+    # fname = "test_audio_000.wav"
+    # soundfile.write(
+    #     f"./audio/{fname}",
+    #     samples,
+    #     16000,
+    #     format='WAV',
+    #     subtype="FLOAT")
     # audio_file = request.files['audio']
     # # 将音频文件保存到服务器上的指定路径
     # audio_file.save('./audio/test_audio_000.wav')

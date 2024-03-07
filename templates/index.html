@@ -29,7 +29,7 @@
 		
 		var formData = new FormData();
 		var isubmit = 0;
-		var reader = new FileReader();
+		// var reader = new FileReader();
 		if (navigator.mediaDevices.getUserMedia){
 			const constraints = {audio: true};
 			navigator.mediaDevices.getUserMedia(constraints).then(
@@ -44,9 +44,10 @@
 							console.log(chunks);
 							mediaRecorder.onstop = e => {
 								var blob = new Blob(chunks, {type: "audio/ogg; codecs=opus"});
-								reader.readAsDataURL(blob);
+								// reader.readAsDataURL(blob);
 								
-								formData.append("audio", encodeURIComponent(reader.result), "temp_audio.ogg");
+								formData.append("audio", blob);
+								// formData.append("audio", encodeURIComponent(reader.result));
 								formData.append("sr", 16000);
 								isubmit = 1;
 								
@@ -145,6 +146,7 @@
 				console.log(submit_message+"填写完成");
 				var jsonData = JSON.stringify(data);
 				formData.append("jsondata", jsonData)
+				console.log(formData);
 				var xhr = new XMLHttpRequest();
 				xhr.open('POST', '/test', true);
 				xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded;charset=UTF-8');

@@ -4,6 +4,10 @@
 # @Author: ZhaoKe
 # @File : main.py
 # @Software: PyCharm
+
+# reference https://github.com/smokedsalmonbagel/flaskUploads/blob/main/main.py
+# https://blog.csdn.net/gou1791241251/article/details/129706439
+# https://stackoverflow.com/questions/70733510/send-blob-to-python-flask-and-then-save-it
 import os
 import numpy as np
 import soundfile
@@ -22,7 +26,6 @@ def index():
     # return "<p>hello world</p><br><p>ok!</p>"
 
 
-total_chunks = 1024
 @app.route('/merge', methods=['POST'])
 def merge_chunks():
     filename = request.form.get('filename')
@@ -44,24 +47,26 @@ def merge_chunks():
 @app.route('/postchunk', methods=['POST'])
 def get_chunk():
     try:
-        chunk = request.form.get('chunkIndex')  # 获取当前上传的块数
+        sr = request.form.get('sr')  # 获取当前上传的块数
         filename = request.form.get('filename')  # 获取文件名
-        print(f"chunk filename: {chunk}, {filename}")
-        file = request.form.get('file')  # 获取上传的文件  # 这里是args不是files
+        print(request.form)
+        print(f"sr filename: {sr}, {filename}")
+        audiofile = request.files.get('audio')  # 获取上传的文件  # 这里是files不是form
 
-        if not file or not chunk or not filename:
+        if not audiofile or not sr or not filename:
             return jsonify({'code': -1, 'message': '缺少参数'})
-
+        print("file:", audiofile)
         # 创建文件夹用来存储分块
         upload_dir = './temp_files'
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
 
         # 将分块保存到指定的位置
-        chunk_file = os.path.join(upload_dir, filename + '.' + str(chunk))
-        with open(chunk_file, 'wb') as f:
-            f.write(file.read())
-        print(f"保存分块:{filename}.{chunk}")
+        chunk_file = os.path.join(upload_dir, filename + '.ogg')
+        audiofile.save(chunk_file)
+        # with open(chunk_file, 'wb') as f:
+        #     f.write(file.read())
+        print(f"保存分块:{filename}.ogg")
         return jsonify({'code': 0, 'message': '上传成功'})
     except Exception as e:
         print(e)
@@ -99,11 +104,20 @@ def print_dcit():
     try:
         info_table = request.form
         print(info_table)
+        # for key in info_table:
+        #     print(key, info_table[key])
+        print(info_table.get("gender"))
+        print(info_table.get("disease"))
+        print(info_table.get("age"))
+        print(info_table.get("issmoking"))
+        print(info_table.get("isfever"))
+        response = {'code': 0, 'message': "table form received successfully!"}
+        return jsonify(response=response)
     except Exception as e:
         print(e)
         print("Error at request.form")
-    response = {'code': 0, 'message': "table form received successfully!"}
-    return jsonify(response=response)
+        response = {'code': -1, 'message': "table form received failed"+str(e)}
+        return jsonify(response=response)
 
 
 if __name__ == '__main__':

@@ -25,14 +25,13 @@
 		发热：<input name ="isfever" type ="radio"   value = "1" >是&nbsp;
 			<input name ="isfever" type ="radio"   value = "0" >否
 		<br><br />
-		<button><input type="submit" id="submit_table" name="" onclick="feath_data()"/></button>
+		<button><input type="submit" id="submit_table" name="" onclick="uploadFile()"/></button>
 	</div>
     <script type="text/javascript">
 		
 		var formData = new FormData();
-		var isubmit = 0;
 		var chunks = [];
-		
+		var audio_seg;
 		// var reader = new FileReader();
 		if (navigator.mediaDevices.getUserMedia){
 			const constraints = {audio: true};
@@ -44,12 +43,14 @@
 					recordBtn.onclick = () => {
 						if (mediaRecorder.state === "recording"){
 							mediaRecorder.stop();
-							console.log(chunks);
+							// console.log(chunks);
 							mediaRecorder.onstop = e => {
 								var blob = new Blob(chunks, {type: "audio/ogg; codecs=opus"});
+								audio_seg = blob;
 								var audioURL = window.URL.createObjectURL(blob);
 								const audioSrc = document.querySelector("#audio");
 								audioSrc.src = audioURL;
+								chunks = [];
 							};
 							recordBtn.textContent = "record";
 							console.log("录音结束");
@@ -59,7 +60,7 @@
 							mediaRecorder.ondataavailable = function(e){
 								chunks.push(e.data);
 							};
-							console.log(chunks);
+							// console.log(chunks);
 							console.log("录音中...");
 							recordBtn.textContent = "stop";
 						}
@@ -73,115 +74,118 @@
 		}
 
 		async function uploadFile(){
-			filename_prefix = "temp_chunk_file";
-			for(let i=0;i<chunks.length;i++){
-				const chunk = chunks[i];
-				const formAudio = new FormData();
-				formAudio.append('file', chunk);
-				formAudio.append('filename', filename_prefix);
-				formAudio.append('chunkIndex', i);
-				await fetch('/postchunk',{
-					method: 'POST',
-					body: formAudio,
-				}).then((response) => console.log(response.json()));
-				const progress = (i / chunks.length) * 100;
-				document.getElementById('progressBar').value = progress;
-			}
-			console.log("分块上传完毕！");
+			// console.log("先上传分块数据。");
+			var filename_prefix = "temp_chunk_file_5";
 			
-			formData.append("sr", 16000);
-			formData.append("filename", filename_prefix);
-			isubmit = 1;
-			merge_data = new FormData();
-			merge_data.append("filename", filename_prefix);
-			fetch("/merge", {method:'POST', body: merge_data}).then(response=>console.log(response));
+			const formAudio = new FormData();
 			
-			chunks = [];
+			formAudio.append('audio', audio_seg);
+			formAudio.append('filename', filename_prefix);
+			formAudio.append("sr", 16000);
+			// console.log("FormData to be uploaded:");
+			// console.log(formAudio);
+			await fetch('/postchunk',{
+				method: 'POST',
+				// 不知道为啥，加上请求头就出错
+				// headers:{'Content-Type': 'multipart/form-data'},
+				body: formAudio,
+			}).then((response) => {
+				console.log("返回值：")
+				console.log(response.json());
+				// isubmit = 1;
+				});
+			console.log("音频上传完毕！");
+			feath_data();
+			
 		}
 		
 		function feath_data(){
-			console.log("先上传分块数据。");
-			uploadFile();
-			console.log("分块上传数据完毕。");
-			data = {}
+			var formTable = new FormData();
+			var is_submit = 1;
 			var submit_message = "";
 			var genders = document.getElementsByName('gender');
 			// console.log(genders[0].checked+"，"+genders[1].checked);
 			if (genders[0].checked == false){
 				if (genders[1].checked == false){
-					isubmit = 0;
+					is_submit = 0;
 					submit_message += "请选择你的性别。\n";
 				}else{
-					data['gender'] = 0;
+					formTable.append("gender", 0);
 				}
 			}else{
 				if (genders[1].checked == true){
-					isubmit = 0;
+					is_submit = 0;
 					submit_message += "请选择您的生理性别，并且仅选择一个。\n";
 				}else{
-					data['gender'] = 1;
+					formTable.append("gender", 1);
 				};
 			}
-			data['age'] = parseInt(document.getElementById('age').value);
-			if(data['age'] < 0 || data['age'] > 150 || data['age']==''){
-				isubmit = 0;
+			data_age = parseInt(document.getElementById('age').value);
+			if(data_age < 0 || data_age > 150 || data_age==''){
+				is_submit = 0;
 				submit_message += "请正确输入您的年龄，0到150之间的整数值。";
+			}else{
+				formTable.append("age", data_age);
 			}
-			data['disease'] = document.getElementById('disease').value;
-			if(data['disease'] ==''){
-				submit = 0;
+			data_disease = document.getElementById('disease').value;
+			if(data_disease ==''){
+				is_submit = 0;
 				submit_message += "请输入您的症状。";
+			}else{
+				formTable.append("disease", data_disease);
 			}
 			var issmoking = document.getElementsByName('issmoking');
 			// console.log(issmoking[0].checked+"，"+issmoking[1].checked);
 			if (issmoking[0].checked == false){
 				if (issmoking[1].checked == false){
-					isubmit = 0;
+					is_submit = 0;
 					submit_message += "请选择你的抽烟状况。\n";
 				}else{
-					data['issmoking'] = 0;
+					formTable.append("issmoking", 0);
 				}
 			}else{
 				if (issmoking[1].checked == true){
-					isubmit = 0;
+					is_submit = 0;
 					submit_message += "请选择您的抽烟状况，并且仅选择一个。\n";
 				}else{
-					data['issmoking'] = 1;
+					formTable.append("issmoking", 1);
 				};
 			}
 			var isfever = document.getElementsByName('isfever');
 			// console.log(isfever[0].checked+"，"+isfever[1].checked);
 			if (isfever[0].checked == false){
 				if (isfever[1].checked.checked == false){
-					isubmit = 0;
+					is_submit = 0;
 					submit_message += "请选择你的发烧状况。\n";
 				}else{
-					data['isfever'] = 0;
+					formTable.append("isfever", 0);
 				}
 			}else{
 				if (isfever[1].checked == true){
-					isubmit = 0;
+					is_submit = 0;
 					submit_message += "请选择您的发烧状况，并且仅选择一个。\n";
 				}else{
-					data['isfever'] = 1;
+					formTable.append("isfever", 1);
 				};
 			}
-			console.log(data);
-			if (isubmit == 1){
-				console.log(submit_message+"填写完成");
-				var jsonData = JSON.stringify(data);
-				formData.append("jsondata", jsonData)
-				console.log(formData);
+			// console.log(data);
+			if (is_submit == 1){
+				// console.log(submit_message+"填写完成");
+				// var jsonData = JSON.stringify(data);
+				// formData.append("jsondata", jsonData)
+				console.log(formTable);
 				var xhr = new XMLHttpRequest();
 				xhr.open('POST', '/test', true);
-				xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+				// 不知道为啥，加上请求头就出错
+				// xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState === 4 && xhr.status === 200) {
 						var response = JSON.parse(xhr.responseText);
 						console.log(response);
 					}
 				};
-				xhr.send(formData);
+				xhr.send(formTable);
+				console.log("上传表格信息完成。")
 			}else{
 				alert("出错，请重新填写表单："+submit_message);
 			}

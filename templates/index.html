@@ -7,6 +7,8 @@
 <body>
 	<div id="content" style="width: 1440; height: 3200;">
 		<input type="button" id="start" value="开始录音"/><audio id="audio" controls></audio>
+		<br>
+		<progress id="progressBar" value="0" max="100"></progress>
 		<br /><br />
 		性别：<input name ="gender" type ="radio" value = "1" >男&nbsp;
 			<input name ="gender" type ="radio" value = "0" >女
@@ -29,6 +31,8 @@
 		
 		var formData = new FormData();
 		var isubmit = 0;
+		var chunks = [];
+		
 		// var reader = new FileReader();
 		if (navigator.mediaDevices.getUserMedia){
 			const constraints = {audio: true};
@@ -37,28 +41,19 @@
 					console.log("授权成功!");
 					const recordBtn = document.querySelector("#start");
 					const mediaRecorder = new MediaRecorder(stream);
-					var chunks = [];
 					recordBtn.onclick = () => {
 						if (mediaRecorder.state === "recording"){
 							mediaRecorder.stop();
 							console.log(chunks);
 							mediaRecorder.onstop = e => {
 								var blob = new Blob(chunks, {type: "audio/ogg; codecs=opus"});
-								// reader.readAsDataURL(blob);
-								
-								formData.append("audio", blob);
-								// formData.append("audio", encodeURIComponent(reader.result));
-								formData.append("sr", 16000);
-								isubmit = 1;
-								
-								
-								chunks = [];
 								var audioURL = window.URL.createObjectURL(blob);
 								const audioSrc = document.querySelector("#audio");
 								audioSrc.src = audioURL;
 							};
 							recordBtn.textContent = "record";
 							console.log("录音结束");
+							
 						}else{
 							mediaRecorder.start();
 							mediaRecorder.ondataavailable = function(e){
@@ -76,8 +71,38 @@
 		}else{
 			console.error("浏览器不支持 getUserMedia");
 		}
+
+		async function uploadFile(){
+			filename_prefix = "temp_chunk_file";
+			for(let i=0;i<chunks.length;i++){
+				const chunk = chunks[i];
+				const formAudio = new FormData();
+				formAudio.append('file', chunk);
+				formAudio.append('filename', filename_prefix);
+				formAudio.append('chunkIndex', i);
+				await fetch('/postchunk',{
+					method: 'POST',
+					body: formAudio,
+				}).then((response) => console.log(response.json()));
+				const progress = (i / chunks.length) * 100;
+				document.getElementById('progressBar').value = progress;
+			}
+			console.log("分块上传完毕！");
+			
+			formData.append("sr", 16000);
+			formData.append("filename", filename_prefix);
+			isubmit = 1;
+			merge_data = new FormData();
+			merge_data.append("filename", filename_prefix);
+			fetch("/merge", {method:'POST', body: merge_data}).then(response=>console.log(response));
+			
+			chunks = [];
+		}
 		
 		function feath_data(){
+			console.log("先上传分块数据。");
+			uploadFile();
+			console.log("分块上传数据完毕。");
 			data = {}
 			var submit_message = "";
 			var genders = document.getElementsByName('gender');

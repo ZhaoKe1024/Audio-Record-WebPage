@@ -19,7 +19,7 @@ class Item(Base):
                 primary_key=True)  # primary key, id  # Even if this field is not used, it must be explicitly defined, otherwise it cannot be mapped to the data table.
     filename = Column(String(32))  # # 文件名，自然数
     # health = Column(String(16))  # 是否健康，二值标记
-    disease = Column(SmallInteger())  # 疾病类别，自然数标记
+    disease = Column(String(16))  # 疾病类别，自然数标记
     gender = Column(Boolean())  # 性别  # 0-1 二值
     age = Column(SmallInteger())  # 年龄  # 二位数
     issmoking = Column(Boolean())  # 是否抽烟？但是儿科医院肯定不抽  # 0-1 二值
@@ -39,8 +39,8 @@ def insert_use_dict(sess_dict):
     session = Session()
     try:
         fname = "null" if "filename" not in sess_dict else sess_dict['filename']
-        session.add_all([Item(filename=fname, disease=sess_dict['disease'], gender=sess_dict['gender'],
-                              age=sess_dict['age'], issmoking=sess_dict['issmoking'], isfever=sess_dict['isfever'])
+        session.add_all([Item(filename=fname, disease=sess_dict['disease'], gender=int(sess_dict['gender']),
+                              age=int(sess_dict['age']), issmoking=int(sess_dict['issmoking']), isfever=int(sess_dict['isfever']))
                          ])
         session.commit()
         print("Data insert into database cough_schema table cough_main successfully!")
@@ -56,7 +56,7 @@ def test_insert():
     Session = sessionmaker(bind=ENGINE)
     session = Session()
     try:
-        session.add_all([Item(filename="test_no_pkey_0", disease=0, gender=0, age=23, issmoking=1, isfever=0)
+        session.add_all([Item(filename="test_no_pkey_1", disease="healthy", gender='0', age='19', issmoking='0', isfever='1')
                          ])
         session.commit()
         print("Data insert into database cough_schema table cough_main successfully!")

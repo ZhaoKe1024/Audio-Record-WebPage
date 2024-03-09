@@ -95,12 +95,13 @@
 				// isubmit = 1;
 				});
 			console.log("音频上传完毕！");
-			feath_data();
+			feath_data(filename_prefix);
 			
 		}
 		
-		function feath_data(){
+		function feath_data(filename){
 			var formTable = new FormData();
+			formTable.append("filename", filename);
 			var is_submit = 1;
 			var submit_message = "";
 			var genders = document.getElementsByName('gender');

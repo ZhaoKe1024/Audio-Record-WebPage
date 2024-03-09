@@ -23,3 +23,17 @@ sudo mysql -uroot -p
 > use {database name}
 >select * from {tablename}
 ```
+
+# file structure
+```
+root
+└─main.py  # run flask server
+└─audio.py  # audio segment object
+└─templates
+│    └─index.html  # front end HTML
+└─databasekits
+│    └─test_conn.py
+│    └─table_packets.py
+│    └─sqlscripts
+│    │    └─SQL file, create databse, create teble
+```

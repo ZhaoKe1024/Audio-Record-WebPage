@@ -14,15 +14,19 @@ import soundfile
 from flask import Flask, request, jsonify, render_template
 from databasekits.table_packets import insert_use_dict
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
+app.jinja_env.variable_start_string = '<<'
+app.jinja_env.variable_end_string = '>>'
 
 CHUNK_SIZE = 1024 * 1024
 MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20M
+form_save_mode = 0  # mysql 0, local json file 1, 
 
 
 @app.route('/')
 def index():
     return render_template("./index.html")
+    # return render_template("./tizhidiaocha.html")
     # return "<p>hello world</p><br><p>ok!</p>"
 
 
@@ -108,8 +112,8 @@ def upload():
         print("Insert into MySQL database Failed!!")
 
 
-@app.route('/test', methods=['POST'])
-def print_dcit():
+@app.route('/test_audio', methods=['POST'])
+def test_audio_print():
     print("收到信息！")
     try:
         info_table = request.form
@@ -121,6 +125,22 @@ def print_dcit():
         print(info_table.get("age"))
         print(info_table.get("issmoking"))
         print(info_table.get("isfever"))
+        response = {'code': 0, 'message': "table form received successfully!"}
+        return jsonify(response=response)
+    except Exception as e:
+        print(e)
+        print("Error at request.form")
+        response = {'code': -1, 'message': "table form received failed"+str(e)}
+        return jsonify(response=response)
+
+
+@app.route('/test', methods=['POST'])
+def print_dcit():
+    print("收到信息！")
+    try:
+        info_table = request.json
+        for key in info_table:
+            print(key, '\t', info_table[key])
         response = {'code': 0, 'message': "table form received successfully!"}
         return jsonify(response=response)
     except Exception as e:

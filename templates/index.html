@@ -23,9 +23,10 @@
 		是否患有其他呼吸系统疾病？<br /> <input name ="respiratory" type ="radio"   value = "1" >是&nbsp;
 			<input name ="respiratory" type ="radio"   value = "0" >否
 		<br><br />
-		是否患有以下病症？<br /> <input name ="status" type ="radio"   value = "0" >COVID-19（新冠肺炎或后遗症）&nbsp;
-			<input name ="status" type ="radio"   value = "0" >有症状但未检测&nbsp;
-			<input name ="status" type ="radio"   value = "1" >健康
+		是否患有以下病症？<br />
+			<input name ="status" type ="radio"   value = "0" >健康
+			<input name ="status" type ="radio"   value = "1" >COVID-19（新冠肺炎或后遗症）&nbsp;
+			<input name ="status" type ="radio"   value = "2" >有症状但未检测&nbsp;
 		<br>
 		<p>--其他调查--</p>
 		是否抽烟：<input name ="issmoking" type ="radio"   value = "1" >是&nbsp;
@@ -33,20 +34,21 @@
 		<br><br />
 		是否无法控制地咳嗽：<input name ="iscough" type ="radio"   value = "1" >是&nbsp;
 			<input name ="iscough" type ="radio"   value = "0" >否
-		<br /><p>以下可在手机的天气页面查看：天气、污染指数AQI、空气湿度、位置</p><br />
-		今日的天气：<br />
-		<input type="text" name="weather" id="weather" value="今日天气"  class="inputblock" />
+		<br /><br /><p>可在手机的天气页面查看以下信息：天气、污染指数AQI、空气湿度、位置</p>
+		今日的天气(晴天、多云、下雨、沙尘、...)：<br />
+		<input type="text" name="weather" id="weather" value=""  class="inputblock" />
 		<br><br>
-		当前的空气污染指数：<br />
-		<input type="text" name="aqi" id="aqi" value="今日AQI指数" class="inputblock"/>
+		当前的空气污染指数(今日AQI指数)：<br />
+		<input type="text" name="aqi" id="aqi" value="" class="inputblock"/>
 		<br><br>
-		当前的空气湿度：<br />
-		<input type="text" name="humidity" id="humidity" value="今日空气湿度(humidity)" class="inputblock"/>
+		当前的空气湿度(今日空气湿度(humidity))：<br />
+		<input type="text" name="humidity" id="humidity" value="" class="inputblock"/>
 		<br><br>
 		当前的当前位置<br />（省+市+精确到区或者县, +[选填 所在学校或单位]）：<br />
 		<input type="text" name="position" id="position" value="" class="inputblock" />
 		<br><br>
 		<input type="submit" id="submit_table" name="" onclick="uploadFile()"/>
+		<!-- <input type="submit" id="submit_table" name="测试" onclick="feath_data()"/> -->
 	</div>
     <script type="text/javascript">
 		
@@ -142,74 +144,83 @@
 		function feath_data(filename){
 			var formTable = new FormData();
 			formTable.append("filename", filename);
+			
 			var is_submit = 1;
 			var submit_message = "";
-			var genders = document.getElementsByName('gender');
-			// console.log(genders[0].checked+"，"+genders[1].checked);
-			if (genders[0].checked == false){
-				if (genders[1].checked == false){
-					is_submit = 0;
-					submit_message += "请选择你的性别。\n";
-				}else{
-					formTable.append("gender", 0);
-				}
-			}else{
-				if (genders[1].checked == true){
-					is_submit = 0;
-					submit_message += "请选择您的生理性别，并且仅选择一个。\n";
-				}else{
-					formTable.append("gender", 1);
-				};
-			}
-			data_age = parseInt(document.getElementById('age').value);
+			// column 1 Age
+			var data_age = parseInt(document.getElementById('age').value);
 			if(data_age < 0 || data_age > 150 || data_age==''){
 				is_submit = 0;
 				submit_message += "请正确输入您的年龄，0到150之间的整数值。";
 			}else{
 				formTable.append("age", data_age);
 			}
-			data_disease = document.getElementById('disease').value;
-			if(data_disease ==''){
-				is_submit = 0;
-				submit_message += "请输入您的症状。";
+			// column 2 Gender
+			var genders = document.getElementsByName('gender');
+			// console.log(genders[0].checked+"，"+genders[1].checked);
+			if (genders[0].checked == true){
+				formTable.append("gender", 1);
 			}else{
-				formTable.append("disease", data_disease);
+				formTable.append("gender", 0);
 			}
-			var issmoking = document.getElementsByName('issmoking');
-			// console.log(issmoking[0].checked+"，"+issmoking[1].checked);
-			if (issmoking[0].checked == false){
-				if (issmoking[1].checked == false){
-					is_submit = 0;
-					submit_message += "请选择你的抽烟状况。\n";
-				}else{
-					formTable.append("issmoking", 0);
-				}
+			// Column 3 Respiratory_conditions
+			var is_respiratory_condition = document.getElementsByName('respiratory');
+			if (is_respiratory_condition[0].checked == true){
+				formTable.append("respiratory", 1);
 			}else{
-				if (issmoking[1].checked == true){
-					is_submit = 0;
-					submit_message += "请选择您的抽烟状况，并且仅选择一个。\n";
-				}else{
-					formTable.append("issmoking", 1);
-				};
+				formTable.append("respiratory", 0);
 			}
+			// Column 4 Fever_muscalpain
 			var isfever = document.getElementsByName('isfever');
 			// console.log(isfever[0].checked+"，"+isfever[1].checked);
-			if (isfever[0].checked == false){
-				if (isfever[1].checked.checked == false){
-					is_submit = 0;
-					submit_message += "请选择你的发烧状况。\n";
-				}else{
-					formTable.append("isfever", 0);
-				}
+			if (isfever[0].checked == true){
+				formTable.append("isfever", 1);
 			}else{
-				if (isfever[1].checked == true){
-					is_submit = 0;
-					submit_message += "请选择您的发烧状况，并且仅选择一个。\n";
-				}else{
-					formTable.append("isfever", 1);
-				};
+				formTable.append("isfever", 0);
 			}
-			// console.log(data);
+			// Column 5 status
+			var isfever = document.getElementsByName('status');
+			for(let i=0;i<isfever.length;i++){
+				if(isfever[i].checked==true){
+					formTable.append("status", i);
+				}
+			}
+			// column 6 My[0] is Smoking
+			var issmoking = document.getElementsByName('issmoking');
+			// console.log(issmoking[0].checked+"，"+issmoking[1].checked);
+			if (issmoking[0].checked == true){
+				formTable.append("issmoking", 1);
+			}else{
+				formTable.append("issmoking", 0);
+			}
+			// column 7 My[1] is Cough
+			var iscough = document.getElementsByName('iscough');
+			// console.log(issmoking[0].checked+"，"+issmoking[1].checked);
+			if (iscough[0].checked == true){
+				formTable.append("iscough", 1);
+			}else{
+				formTable.append("iscough", 0);
+			}
+			// column 8 My[2] Weather
+			var weather_item = document.getElementById('weather').value;
+			formTable.append("weather", weather_item);
+
+			// column 9 My[3] AQI
+			var aqi_item = parseInt(document.getElementById('aqi').value);
+			if(aqi_item < 0 ){
+				is_submit = 0;
+				submit_message += "请正确输入空气质量AQI指数，大于0的整数值。";
+			}else{
+				formTable.append("aqi", aqi_item);
+			}
+			// column 10 My[4] humidity
+			var humidity_item = parseInt(document.getElementById('humidity').value);
+			if(humidity_item < 0 ){
+				is_submit = 0;
+				submit_message += "请正确输入空气质量AQI指数，大于0的整数值。";
+			}else{
+				formTable.append("humidity", humidity_item);
+			}
 			if (is_submit == 1){
 				// console.log(submit_message+"填写完成");
 				// var jsonData = JSON.stringify(data);

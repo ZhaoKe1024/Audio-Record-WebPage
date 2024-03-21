@@ -9,6 +9,7 @@
 # https://blog.csdn.net/gou1791241251/article/details/129706439
 # https://stackoverflow.com/questions/70733510/send-blob-to-python-flask-and-then-save-it
 import os
+import json
 from flask import Flask, request, jsonify, render_template
 from databasekits.table_packets import insert_use_dict
 
@@ -136,10 +137,16 @@ def test_audio_print():
 def print_dcit():
     print("收到信息！")
     try:
-        info_table = request.json
+        info_table = request.form
+        json_tosave = {}
         for key in info_table:
             print(key, '\t', info_table[key])
+            json_tosave[key] = info_table[key]
+        new_json_string = json.dumps(json_tosave, ensure_ascii=False)  # 正常显示中文
+        with open(f"./test_{info_table['filename']}.json", 'w', encoding='utf_8') as nf:
+            nf.write(new_json_string)
         response = {'code': 0, 'message': "table form received successfully!"}
+
         return jsonify(response=response)
     except Exception as e:
         print(e)

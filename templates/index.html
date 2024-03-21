@@ -10,24 +10,64 @@
 		<br>
 		<progress id="progressBar" value="0" max="100"></progress>
 		<br /><br />
+		年龄：<input type="text" name="age" id="age" value=""/>
+		<br /><br />
 		性别：<input name ="gender" type ="radio" value = "1" >男&nbsp;
 			<input name ="gender" type ="radio" value = "0" >女
-		<br><br />
-		年龄：<input type="text" name="age" id="age" value=""/>
-		<br />
-		<p>--症状--</p>
 		<br>
-		病症：<input type="text" name="disease" id="disease" value="输入您的症状,如果健康则填 0 或 健康"/>
-		<br /><br />
+		<p>--症状--</p>
+		<br />
+		是否感到发烧或者肌肉疼痛？<br /> <input name ="isfever" type ="radio"   value = "1" >是&nbsp;
+			<input name ="isfever" type ="radio"   value = "0" >否
+		<br><br />
+		是否患有其他呼吸系统疾病？<br /> <input name ="respiratory" type ="radio"   value = "1" >是&nbsp;
+			<input name ="respiratory" type ="radio"   value = "0" >否
+		<br><br />
+		是否患有以下病症？<br /> <input name ="status" type ="radio"   value = "0" >COVID-19（新冠肺炎或后遗症）&nbsp;
+			<input name ="status" type ="radio"   value = "0" >有症状但未检测&nbsp;
+			<input name ="status" type ="radio"   value = "1" >健康
+		<br>
+		<p>--其他调查--</p>
 		是否抽烟：<input name ="issmoking" type ="radio"   value = "1" >是&nbsp;
 			<input name ="issmoking" type ="radio"   value = "0" >否
 		<br><br />
-		发热：<input name ="isfever" type ="radio"   value = "1" >是&nbsp;
-			<input name ="isfever" type ="radio"   value = "0" >否
-		<br><br />
-		<button><input type="submit" id="submit_table" name="" onclick="uploadFile()"/></button>
+		是否无法控制地咳嗽：<input name ="iscough" type ="radio"   value = "1" >是&nbsp;
+			<input name ="iscough" type ="radio"   value = "0" >否
+		<br /><p>以下可在手机的天气页面查看：天气、污染指数AQI、空气湿度、位置</p><br />
+		今日的天气：<br />
+		<input type="text" name="weather" id="weather" value="今日天气"  class="inputblock" />
+		<br><br>
+		当前的空气污染指数：<br />
+		<input type="text" name="aqi" id="aqi" value="今日AQI指数" class="inputblock"/>
+		<br><br>
+		当前的空气湿度：<br />
+		<input type="text" name="humidity" id="humidity" value="今日空气湿度(humidity)" class="inputblock"/>
+		<br><br>
+		当前的当前位置<br />（省+市+精确到区或者县, +[选填 所在学校或单位]）：<br />
+		<input type="text" name="position" id="position" value="" class="inputblock" />
+		<br><br>
+		<input type="submit" id="submit_table" name="" onclick="uploadFile()"/>
 	</div>
     <script type="text/javascript">
+		
+		const input_blocks = document.getElementsByClassName("inputblock");
+		for(let i=0; i< input_blocks.length; i++){
+			input_blocks[i].style.color='#999';
+			input_blocks[i].onFocus = "graytext(this.id)";
+			input_blocks[i].onBlur = "blacktext(this.id)";
+		}
+		function graytext(x){
+			var x_elem = document.getElementById(x);
+			if (x_elem.value == defaultValue){
+				x_elem.value="";
+			}
+		}
+		function blacktext(x){
+			var x_elem = document.getElementById(x);
+			if (! x_elem.value){
+				x_elem.value=defaultValue;
+			}
+		}
 		
 		var formData = new FormData();
 		var chunks = [];

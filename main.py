@@ -9,8 +9,6 @@
 # https://blog.csdn.net/gou1791241251/article/details/129706439
 # https://stackoverflow.com/questions/70733510/send-blob-to-python-flask-and-then-save-it
 import os
-import numpy as np
-import soundfile
 from flask import Flask, request, jsonify, render_template
 from databasekits.table_packets import insert_use_dict
 
@@ -20,7 +18,7 @@ app.jinja_env.variable_end_string = '>>'
 
 CHUNK_SIZE = 1024 * 1024
 MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20M
-form_save_mode = 0  # mysql 0, local json file 1, 
+form_save_mode = 0  # mysql 0, local json file 1,
 
 
 @app.route('/')

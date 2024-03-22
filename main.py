@@ -12,6 +12,7 @@ import os
 import json
 from flask import Flask, request, jsonify, render_template
 from databasekits.table_packets import insert_use_dict
+from gevent import pywsgi
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.jinja_env.variable_start_string = '<<'
@@ -133,7 +134,7 @@ def test_audio_print():
         return jsonify(response=response)
 
 
-@app.route('/test', methods=['POST'])
+@app.route('/getinfo', methods=['POST'])
 def print_dcit():
     print("收到信息！")
     try:
@@ -156,4 +157,6 @@ def print_dcit():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=8000)
+    http_server = pywsgi.WSGIServer(('0.0.0.0', 5000), app)
+    http_server.serve_forever()
+    # app.run(host='0.0.0.0', debug=True, port=8000)

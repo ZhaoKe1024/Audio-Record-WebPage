@@ -7,7 +7,7 @@
 import argparse
 import distutils
 import functools
-
+from audio import AudioSegment
 
 def print_arguments(args=None, configs=None):
     if args:
@@ -43,7 +43,11 @@ def add_arguments(argname, type, default, help, argparser, **kwargs):
 
 parser = argparse.ArgumentParser(description=__doc__)
 add_arg = functools.partial(add_arguments, argparser=parser)
-add_arg('info', type=str, help='计算音频信息')
+add_arg(argname='info', type=str, default=None, help='计算音频信息')
 args = parser.parse_args()
 print_arguments(args=args)
 
+
+if args.info:
+    seg = AudioSegment.from_file(args.info)
+    print("{}: duration {}".format(args.info, seg.duration))

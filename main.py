@@ -23,6 +23,8 @@ CHUNK_SIZE = 1024 * 1024
 MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20M
 form_save_mode = 0  # mysql 0, local json file 1,
 
+save_dir = "./temp_files/"
+
 
 def get_cur_timestr() -> str:
     return time.strftime("%Y%m%d%H%M", time.localtime())
@@ -50,7 +52,7 @@ def merge_chunks():
     except Exception as e:
         print(e)
         print("分块合并失败！")
-        return jsonify({'code': -1, 'message': "失败："+str(e)})
+        return jsonify({'code': -1, 'message': "失败：" + str(e)})
 
 
 @app.route('/postchunk', methods=['POST'])
@@ -66,12 +68,12 @@ def get_chunk():
             return jsonify({'code': -1, 'message': '缺少参数'})
         print("file:", audiofile)
         # 创建文件夹用来存储分块
-        upload_dir = './temp_files'
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
+
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
 
         # 将分块保存到指定的位置
-        chunk_file = os.path.join(upload_dir, filename + '.ogg')
+        chunk_file = os.path.join(save_dir, filename + '.ogg')
         audiofile.save(chunk_file)
         # with open(chunk_file, 'wb') as f:
         #     f.write(file.read())
@@ -135,7 +137,7 @@ def test_audio_print():
     except Exception as e:
         print(e)
         print("Error at request.form")
-        response = {'code': -1, 'message': "table form received failed"+str(e)}
+        response = {'code': -1, 'message': "table form received failed" + str(e)}
         return jsonify(response=response)
 
 
@@ -149,7 +151,7 @@ def print_dcit():
             print(key, '\t', info_table[key])
             json_tosave[key] = info_table[key]
         new_json_string = json.dumps(json_tosave, ensure_ascii=False)  # 正常显示中文
-        with open(f"./test_{info_table['filename']}.json", 'w', encoding='utf_8') as nf:
+        with open(save_dir + f"test_{info_table['filename']}.json", 'w', encoding='utf_8') as nf:
             nf.write(new_json_string)
         response = {'code': 0, 'message': "table form received successfully!"}
 
@@ -157,7 +159,7 @@ def print_dcit():
     except Exception as e:
         print(e)
         print("Error at request.form")
-        response = {'code': -1, 'message': "table form received failed"+str(e)}
+        response = {'code': -1, 'message': "table form received failed" + str(e)}
         return jsonify(response=response)
 
 

@@ -6,7 +6,9 @@
 </head>
 <body>
 	<div id="content" style="width: 1440; height: 3200;">
-		<input type="button" id="start" value="开始录音"/><audio id="audio" controls></audio>
+		<input type="button" id="start" value="开始录音"/>
+		<p id="flag">  静止状态</p>
+		<audio id="audio" controls></audio>
 		<br>
 		<progress id="progressBar" value="0" max="100"></progress>
 		<br /><br />
@@ -95,6 +97,7 @@
 								chunks = [];
 							};
 							recordBtn.textContent = "record";
+							document.getElementById("flag").innerText = "录音结束，等待上传。";
 							console.log("录音结束");
 							
 						}else{
@@ -103,16 +106,21 @@
 								chunks.push(e.data);
 							};
 							// console.log(chunks);
+							document.getElementById("flag").innerText = "录音中";
 							console.log("录音中...");
 							recordBtn.textContent = "stop";
 						}
 						console.log("录音器状态：", mediaRecorder.state);
 					};
 				}, 
-				() => {console.log("授权失败！")}
+				() => {
+					console.log("授权失败！");
+					document.getElementById("flag").innerText = "getUserMedia 授权失败，网站未使用HTTPS协议，或者打开相机权限。";
+					}
 			);
 		}else{
 			console.error("浏览器不支持 getUserMedia");
+			document.getElementById("flag").innerText = "getUserMedia 授权失败，网站未使用HTTPS协议，或者打开相机权限。";
 		}
 
 		async function uploadFile(){
@@ -137,6 +145,7 @@
 				// isubmit = 1;
 				});
 			console.log("音频上传完毕！");
+			document.getElementById("flag").innerText = "上传完毕，点击重新录制。";
 			feath_data(filename_prefix);
 			
 		}

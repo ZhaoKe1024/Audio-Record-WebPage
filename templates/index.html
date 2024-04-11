@@ -6,6 +6,7 @@
 </head>
 <body>
 	<div id="content" style="width: 1440; height: 3200;">
+		<p id="timestr"></p>
 		<input type="button" id="start" value="开始录音"/>
 		<p id="flag">  静止状态</p>
 		<audio id="audio" controls></audio>
@@ -54,6 +55,25 @@
 	</div>
     <script type="text/javascript">
 		
+		function get_timestr(){
+			var now = new Date();
+			var date_time = Array();
+			var status = 0;
+			var clock;
+			timestr_meg = "";
+			var tmp_str = now.getFullYear(); //年
+			timestr_meg += tmp_str;
+			var str_list = [now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()]
+			for(let i=0; i<str_list.length; i++){
+				if (str_list[i] < 10){
+					timestr_meg += "0"+str_list[i];
+				}else{
+					timestr_meg += str_list[i];
+				}
+			}
+			return timestr_meg;
+		}
+		
 		const input_blocks = document.getElementsByClassName("inputblock");
 		for(let i=0; i< input_blocks.length; i++){
 			input_blocks[i].style.color='#999';
@@ -77,7 +97,9 @@
 		var chunks = [];
 		var audio_seg;
 		// var reader = new FileReader();
-		if (navigator.mediaDevices.getUserMedia){
+		var flag = navigator.mediaDevices;
+		console.log("flag:"+flag);
+		if (flag != undefined){
 			const constraints = {audio: true};
 			navigator.mediaDevices.getUserMedia(constraints).then(
 				stream => {
@@ -119,13 +141,13 @@
 					}
 			);
 		}else{
-			console.error("浏览器不支持 getUserMedia");
+			console.error("浏览器不支持 getUserMedia，授权失败，网站未使用HTTPS协议，或者打开相机权限。");
 			document.getElementById("flag").innerText = "getUserMedia 授权失败，网站未使用HTTPS协议，或者打开相机权限。";
 		}
 
 		async function uploadFile(){
 			// console.log("先上传分块数据。");
-			var filename_prefix = "temp_chunk_file_5";
+			var filename_prefix = get_timestr()+"_";
 			
 			const formAudio = new FormData();
 			
@@ -147,7 +169,6 @@
 			console.log("音频上传完毕！");
 			document.getElementById("flag").innerText = "上传完毕，点击重新录制。";
 			feath_data(filename_prefix);
-			
 		}
 		
 		function feath_data(filename){

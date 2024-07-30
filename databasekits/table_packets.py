@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2024-03-04 23:27
-
+import json
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer, SmallInteger, Boolean, String
@@ -10,7 +10,12 @@ from sqlalchemy.orm import sessionmaker
 import pandas as pd
 
 Base = declarative_base()
-pwd = "zkGcx_0703"
+# json_str = None  # json string
+with open("./accounts.json", 'r', encoding='utf_8') as fp:
+    json_str = fp.read()
+json_data = json.loads(json_str)  # get json from json string
+pwd = json_data["202403"]
+print(pwd)  # <class 'dict'>
 
 
 class Item(Base):

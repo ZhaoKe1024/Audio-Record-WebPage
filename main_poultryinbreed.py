@@ -4,16 +4,14 @@
 # @Author: ZhaoKe
 # @File : main_poultryinbreed.py
 # @Software: PyCharm
-import os
-import json
 import time
 import logging
 from flask import Flask, request, jsonify, render_template
 from gevent import pywsgi
-from databasekits.table_packets import insert_use_dict
+from inbreed_lib.procedure.kinship_on_graph import Kinship
 from inbreed_lib.BreedingMain import run_main
 from inbreed_lib.func import NullNameException
-from inbreed_lib.graphfromtable import get_df_from_xlsx
+from inbreed_lib.graphfromtable import get_df_from_xlsx, get_graph_from_data
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.jinja_env.variable_start_string = '<<'
@@ -35,22 +33,6 @@ class IBCalculator(object):
         self.keys = ["analyse", "select", "eval", "p", "p1", "help"]
         self.describe = ["分析文件并构建族谱", "生成新一年的配种方案", "评估现有方案", "计算个体近交系数",
                          "计算亲缘相关系数", "查看帮助"]
-
-    def execute_all(self, kv_list):
-        ind = 1
-        while ind <= len(kv_list) - 1:
-            if kv_list[ind] == "--p1":
-                assert ind + 3 < len(kv_list), f"expect 4 args but get {len(kv_list) - ind}"
-                execute(key=kv_list[ind], value=kv_list[ind + 1], key2=kv_list[ind + 2], value2=kv_list[ind + 3])
-                ind += 4
-            else:
-                if ind + 1 == len(kv_list):
-                    execute(key=kv_list[ind], value=None)
-                    ind += 1
-                else:
-
-                    execute(key=kv_list[ind], value=kv_list[ind + 1])
-                    ind += 2
 
     def check_kinship(self):
         res_message = None
@@ -120,7 +102,7 @@ def get_cur_timestr() -> str:
 
 @app.route('/')
 def index():
-    return render_template("./main_poultryinbreed.html")
+    return render_template("./poultry_inbreedingtools.html")
 
 
 @app.route('/help', methods=["GET"])
@@ -147,26 +129,62 @@ def get_help():
     return jsonify(response={"help": help_info})
 
 
-@app.route('/analyse')
+@app.route('/analyse', methods=['GET', 'POST'])
 def analyse():
+    # if request.method == 'POST':
+    file = request.files['file']
+    print("文件名：", file.filename)
+    file.save("/temp_files/"+file.filename)
+
+    print("文件上传成功")
+    calc.file_to_analyze = "file.filename"
     calc.analyze()
+    return '文件上传成功！并且已成功分析！'
+    # else:
+    #     print("Error! method:", request.method)
+    #     return "未知请求类别！"
 
 
-@app.route('/calc', methods=['POST'])
+@app.route('/calc', methods=['GET', 'POST'])
 def calculate():
     print("收到信息！")
     try:
-        info_table = request.json
-        # Example
-        # {"mode": "single", "Value": "7429"}
-        # {"mode": "double", "Value": {"p1":"7429", p2:"7433"}}
-        if info_table["mode"] == "single":
-            calc.calc_inbrcoef(info_table["value"])
-        elif info_table["mode"] == "double":
-            calc.calc_corrcoef(p1=info_table["value"]["p1"], p2=info_table["value"]["p2"])
-        else:
-            pass
+        mode = None
+        p, p1, p2 = -1, -1, -1
+        if request.method == "METHOD":
+            info_table = request.get_json()
+            # Example
+            # {"mode": "single", "Value": "7429"}
+            # {"mode": "double", "Value": {"p1":"7429", p2:"7433"}}
+            mode = info_table["mode"]
+            if mode == "single":
+                p = info_table["value"]
+            elif mode == "double":
+                p1 = info_table["value"]["p1"]
+                p2 = info_table["value"]["p2"]
+            else:
+                raise Exception("Error mode.")
 
+        elif request.method == "GET":
+            mode = request.args.get("mode")
+            if mode == "single":
+                p = request.args.get("p")
+            elif mode == "double":
+                # 可以通过 request 的 args 属性来获取参数
+                p1 = request.args.get("p1")
+                p2 = request.args.get("p2")
+            else:
+                raise Exception("Error mode.")
+
+        else:
+            raise Exception("Error Unknown Method.")
+        if mode == "single":
+            res = calc.kinship.calc_inbreed_coef(p=p)
+        elif mode == "double":
+            res = calc.kinship.calc_kinship_corr(p1=p1, p2=p2)
+        else:
+            raise Exception("Error mode.")
+        return jsonify(response={"res": res, "log": calc.kinship.analyzer.get_just_message()})
         # json_tosave = {}
         # for key in info_table:
         #     print(key, '\t', info_table[key])
@@ -175,7 +193,7 @@ def calculate():
         # with open(save_dir + f"test_{info_table['filename']}.json", 'w', encoding='utf_8') as nf:
         #     nf.write(new_json_string)
         # response = {'code': 0, 'message': "table form received successfully!"}
-        # 
+        #
         # return jsonify(response=response)
     except Exception as e:
         print(e)

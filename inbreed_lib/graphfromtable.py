@@ -4,10 +4,10 @@
 # @Author: ZhaoKe
 # @File : graphfromtable.py
 # @Software: PyCharm
-from procedure.xlsxreader import get_df_from_xlsx
-from selector.entities import Vertex
-from analyzer.LayerGraph import LayerNetworkGraph
-from procedure.xlsx2graph import build_family_graph_base
+from inbreed_lib.procedure.xlsxreader import get_df_from_xlsx
+from inbreed_lib.selector.entities import Vertex
+from inbreed_lib.analyzer.LayerGraph import LayerNetworkGraph
+from inbreed_lib.procedure.xlsx2graph import build_family_graph_base
 
 
 def get_graph_from_data(file_path):

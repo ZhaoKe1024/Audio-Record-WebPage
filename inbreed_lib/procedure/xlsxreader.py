@@ -8,7 +8,7 @@ from typing import List
 import pandas as pd
 import random
 from pandas import DataFrame
-from selector.entities import Poultry
+from inbreed_lib.selector.entities import Poultry
 
 
 def csv_read_test(filepath="./test_xlsx_data.csv"):

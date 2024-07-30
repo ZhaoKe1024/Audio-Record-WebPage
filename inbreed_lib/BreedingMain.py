@@ -7,10 +7,10 @@
 import math
 import random
 import numpy as np
-from graphfromtable import get_graph_from_data
-from selector.GASelector import GASelector
-from procedure.kinship_on_graph import Kinship
-from func import get_familyid
+from inbreed_lib.graphfromtable import get_graph_from_data
+from inbreed_lib.selector.GASelector import GASelector
+from inbreed_lib.procedure.kinship_on_graph import Kinship
+from inbreed_lib.func import get_familyid
 
 
 def run_main(gene_idx="20"):

@@ -7,7 +7,7 @@
 import os
 pack_list = [
     # "PyQT5",
-    # "click~=7.0",
+    "click==8.1.2",
     # "pyinstaller==6.6.0",
     # "pyqt-tools",
 
@@ -16,8 +16,8 @@ pack_list = [
     # "FFmpeg"
 
     # "openpyxl",
-
-    "pymysql"
+    # "xlrd",
+    # "pymysql"
 ]
 # set DS_BUILD_AIO=0
 # set DS_BUILD_SPARSE_ATTN=0

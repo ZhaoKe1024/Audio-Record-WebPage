@@ -4,6 +4,7 @@
 # @Author: ZhaoKe
 # @File : main_poultryinbreed.py
 # @Software: PyCharm
+import os.path
 import time
 import logging
 from flask import Flask, request, jsonify, render_template, send_file
@@ -29,6 +30,8 @@ class IBCalculator(object):
     def __init__(self):
         super(IBCalculator, self).__init__()
         self.file_root = "./temp_files/"
+        if os.path.exists(self.file_root):
+            os.makedirs(self.file_root)
         self.analyse_template = self.file_root + "input_template.xlsx"
         self.file_to_analyze = None
         self.file_to_evaluate = None
@@ -140,7 +143,10 @@ def get_help():
 
 @app.route('/download_template')
 def get_template():
-    return send_file(calc.analyse_template, download_name=calc.analyse_template.split('/')[-1], as_attachment=True)
+    if os.path.exists(calc.analyse_template):
+        return send_file(calc.analyse_template, download_name=calc.analyse_template.split('/')[-1], as_attachment=True)
+    else:
+        raise Exception("the template file {} is not exists.".format(calc.analyse_template))
 
 
 @app.route('/analyse', methods=['GET', 'POST'])

@@ -18,7 +18,7 @@ Base = declarative_base()
 with open("./accounts.json", 'r', encoding='utf_8') as fp:
     json_str = fp.read()
 json_data = json.loads(json_str)  # get json from json string
-pwd = json_data["202407"]
+pwd = json_data["202407"]  # Reborn_240729
 print(pwd)  # <class 'dict'>
 
 

@@ -8,7 +8,7 @@ import os
 pack_list = [
     "numpy==1.24.4",
     "pandas==1.5.3",
-    # "FFmpeg",
+    "openpyxl==3.1.2",
     "flask==2.3.3",
     "gevent==24.2.1",
     "click==8.1.2",

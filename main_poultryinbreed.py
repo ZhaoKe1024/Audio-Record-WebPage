@@ -6,7 +6,8 @@
 # @Software: PyCharm
 import time
 import logging
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file
+
 from gevent import pywsgi
 from inbreed_lib.procedure.kinship_on_graph import Kinship
 from inbreed_lib.BreedingMain import run_main
@@ -27,9 +28,12 @@ save_dir = "./temp_files/"
 class IBCalculator(object):
     def __init__(self):
         super(IBCalculator, self).__init__()
+        self.file_root = "./temp_files/"
+        self.analyse_template = self.file_root + "input_template.xlsx"
         self.file_to_analyze = None
         self.file_to_evaluate = None
         self.kinship = None
+        self.generated_file = None
         self.keys = ["analyse", "select", "eval", "p", "p1", "help"]
         self.describe = ["分析文件并构建族谱", "生成新一年的配种方案", "评估现有方案", "计算个体近交系数",
                          "计算亲缘相关系数", "查看帮助"]
@@ -41,7 +45,9 @@ class IBCalculator(object):
         if self.kinship is None:
             res_message = "请先分析文件"
         if res_message is not None:
-            raise Exception(res_message)
+            return {"flag": -1, "msg": res_message}
+        else:
+            return {"flag": 1, "msg": None}
 
     def analyze(self):
         if self.file_to_analyze.split(".")[-1] not in ["xlsx", "xls"]:
@@ -81,16 +87,19 @@ class IBCalculator(object):
     def evaluate_solution(self):
         self.check_kinship()
         sheet_list = ["16", "17", "18", "19", "20"]
+        file_names = []
         for sheet_name in sheet_list[1:]:
             edges_df = get_df_from_xlsx(filepath=self.file_to_evaluate, sheet_name=sheet_name,
                                         cols=[1, 2, 3])
-            with open(f"./evaluate_{sheet_name}.csv", 'w', encoding="utf_8") as fout:
+            with open(self.file_root + "evaluate_{}.csv".format(sheet_name), 'w', encoding="utf_8") as fout:
                 fout.write("家系号,公号,母号,亲缘相关系数\n")
                 for idx, row in enumerate(edges_df.itertuples()):
                     # print(row[2], row[3])
                     fout.write(f"{row[1]},{row[2]},{row[3]}," + str(
                         self.kinship.calc_kinship_corr(p1=str(row[2]), p2=str(row[3]))) + '\n')
             print(f"表格sheet{sheet_name} 评估完成！")
+            file_names.append("./evaluate_{}.csv".format(sheet_name))
+        return file_names
 
 
 calc = IBCalculator()
@@ -129,29 +138,47 @@ def get_help():
     return jsonify(response={"help": help_info})
 
 
+@app.route('/download_template')
+def get_template():
+    return send_file(calc.analyse_template, download_name=calc.analyse_template.split('/')[-1], as_attachment=True)
+
+
 @app.route('/analyse', methods=['GET', 'POST'])
 def analyse():
-    # if request.method == 'POST':
-    file = request.files['file']
-    print("文件名：", file.filename)
-    file.save("/temp_files/"+file.filename)
-
-    print("文件上传成功")
-    calc.file_to_analyze = "file.filename"
-    calc.analyze()
-    return '文件上传成功！并且已成功分析！'
+    # form = UploadForm()
+    # if form.validate_on_submit():
+    #     file = form.file.data
+    #     file.save('./temp_files/' + file.filename)
+    #     # 保存文件到指定路径
+    #     return '文件上传成功！'
     # else:
-    #     print("Error! method:", request.method)
-    #     return "未知请求类别！"
+    #     return {"flag": -1, "result": None, "msg": '文件上传失败！if form.validate_on_submit(): False!'}
+    if request.method == 'POST':
+        print("包含：")
+        print(request.files)
+        file = request.files['file_data']
+        print("文件名：", file.filename)
+        file.save(calc.file_root + file.filename)
+
+        print("文件上传成功")
+        calc.file_to_analyze = calc.file_root + file.filename
+        calc.analyze()
+        return {"flag": 0, "result": None, "msg": '文件上传成功！并且已成功分析！'}
+    else:
+        print("Error! method:", request.method)
+        return {"flag": -1, "result": None, "msg": '错误请求类别:{}'.format(request.method)}
 
 
 @app.route('/calc', methods=['GET', 'POST'])
 def calculate():
     print("收到信息！")
+    check = calc.check_kinship()
+    if check["flag"] == -1:
+        return check
     try:
         mode = None
         p, p1, p2 = -1, -1, -1
-        if request.method == "METHOD":
+        if request.method == "POST":
             info_table = request.get_json()
             # Example
             # {"mode": "single", "Value": "7429"}
@@ -163,7 +190,7 @@ def calculate():
                 p1 = info_table["value"]["p1"]
                 p2 = info_table["value"]["p2"]
             else:
-                raise Exception("Error mode.")
+                raise Exception("Error mode, only support \'single\' or \'double\'.")
 
         elif request.method == "GET":
             mode = request.args.get("mode")
@@ -174,16 +201,16 @@ def calculate():
                 p1 = request.args.get("p1")
                 p2 = request.args.get("p2")
             else:
-                raise Exception("Error mode.")
+                raise Exception("Error mode, only support \'single\' or \'double\'.")
 
         else:
-            raise Exception("Error Unknown Method.")
+            raise Exception("Error Unknown Method, only support \'GET\' or \'POST\'.")
         if mode == "single":
             res = calc.kinship.calc_inbreed_coef(p=p)
         elif mode == "double":
             res = calc.kinship.calc_kinship_corr(p1=p1, p2=p2)
         else:
-            raise Exception("Error mode.")
+            raise Exception("Error mode, only support \'single\' or \'double\'.")
         return jsonify(response={"res": res, "log": calc.kinship.analyzer.get_just_message()})
         # json_tosave = {}
         # for key in info_table:
@@ -204,14 +231,40 @@ def calculate():
 
 @app.route('/generate')
 def generate_new():
-    req_j = request.json
-    run_main(gene_idx=req_j)
+    t_year = request.args.get("t_year")
+    if calc.file_to_analyze is None:
+        raise Exception("The file to analyse is None.")
+    calc.generated_file = None
+    result_file_name = f"result_name_rand_{t_year}.csv"
+    run_main(file_path=calc.file_to_analyze, gene_idx=t_year, result_file=calc.file_root+result_file_name)
+    calc.generated_file = calc.file_root+result_file_name
+    return jsonify({"flag": 0, "msg": "生成结果文件：{}".format(result_file_name)})
+
+
+@app.route('/generate_result')
+def get_generated_result():
+    if calc.generated_file is None:
+        raise Exception("Null File generated.")
+    return send_file(calc.generated_file, download_name=calc.generated_file.split('/')[-1], as_attachment=True)
 
 
 @app.route('/eval')
-def run_GA():
-    req_j = request.json
-    calc.evaluate_solution()
+def eval_old():
+    file_save_name = get_cur_timestr() + ".xlsx"
+    if request.method == 'POST':
+        file = request.files['file_data']
+        print("文件名：", file.filename)
+        file.save(calc.file_root + file_save_name)
+        print("文件上传成功")
+        calc.file_to_evaluate = calc.file_root + file_save_name
+    else:
+        print("Error! method:", request.method)
+        return {"flag": -1, "result": None, "msg": '错误请求类别:{}'.format(request.method)}
+    result_files = calc.evaluate_solution()
+    res_msg = ""
+    for j, iten in enumerate(result_files):
+        res_msg += "("+str(j+1)+") " + iten + "\n"
+    return jsonify({"flag": 0, "msg": "生成结果文件："+res_msg})
 
 
 if __name__ == '__main__':

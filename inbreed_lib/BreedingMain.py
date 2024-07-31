@@ -13,8 +13,8 @@ from inbreed_lib.procedure.kinship_on_graph import Kinship
 from inbreed_lib.func import get_familyid
 
 
-def run_main(gene_idx="20"):
-    layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path="./历代配种方案及出雏对照2021_带性别.xlsx")
+def run_main(file_path, gene_idx="20", result_file=None):
+    layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path=file_path)
     kinship = Kinship(graph=layergraph)
 
     year2idx = {"16": 0, "17": 1, "18": 2, "19": 3, "20": 4, "21": 5}
@@ -74,7 +74,7 @@ def run_main(gene_idx="20"):
     print("========----------育种方案----------==========")
     print("(家系号，雄性个体编号, 雌性个体编号)]")
     idx = 1
-    fout = open(f"./result_name_rand_{gene_idx}.csv", 'w', encoding="utf_8")
+    fout = open(result_file, 'w', encoding="utf_8")
     fout.write("家系号,公号,母号,亲缘相关系数\n")
     year, mi, fi = "21", 1, 1
     print(

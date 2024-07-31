@@ -6,21 +6,16 @@
 # @Software: PyCharm
 import os
 pack_list = [
-    # "PyQT5",
+    "numpy==1.24.4",
+    "pandas==1.5.3",
+    # "FFmpeg",
+    "flask==2.3.3",
+    "gevent==24.2.1",
     "click==8.1.2",
-    # "pyinstaller==6.6.0",
-    # "pyqt-tools",
-
-    # "pyaudio"
-    # "playsound",
-    # "FFmpeg"
-
-    # "openpyxl",
+    # "flask-wtf==1.2.1",  # wtforms==3.1.2, click==8.1.7
+    "pymysql==1.1.1",
+    "sqlalchemy==2.0.23",
     # "xlrd",
-    # "pymysql"
 ]
-# set DS_BUILD_AIO=0
-# set DS_BUILD_SPARSE_ATTN=0
 for packa in pack_list:
-    # os.system("pip install " + packa + " -i https://pypi.tuna.tsinghua.edu.cn/simple")
     os.system("pip install " + packa + " -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com")

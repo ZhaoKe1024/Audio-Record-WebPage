@@ -9,12 +9,22 @@
 	</head>
 
 	<body>
+		<h1>上传</h1>
 		<form method="post" enctype="multipart/form-data" action="http://127.0.0.1:5001/analyse">
-			<input class="form-control" type="file" name="file_data" value="请上传excel文件">
+			<input class="form-control" type="file" name="file_data" value="请上传excel文件"><br />
+			<!-- <input type="text" name="year" placeholder="输入目标年份"/><br /> -->
 			<input type="submit" value="提交">
 		</form>
-
-
+		<!-- <form method="POST" enctype="multipart/form-data">
+			{{ form.csrf_token }}
+			{{ form.file.label }}
+			{{ form.file }}
+			{{ form.submit }}
+		</form> -->
+		<h1>下载</h1>
+		<form action="/download_template">
+		        <button type="submit">Download</button>
+		    </form>
 		<script src="js/mui.js"></script>
 		<script type="text/javascript">
 			mui.init()

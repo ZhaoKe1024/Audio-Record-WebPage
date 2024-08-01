@@ -137,9 +137,19 @@ def list_eq(L1: List, L2: List):
     return True
 
 
+def path_neq(L1: List, L2: List):
+    for i in range(1, len(L1) - 1):
+        for j in range(1, len(L2) - 1):
+            if L1[i] == L2[j]:
+                return False
+    return True
+
+
 def list_contrain(LList, Lt):
+    if len(LList) == 0:
+        return False
     for Litem in LList:
-        if list_eq(Litem, Lt):
+        if Litem[0] == Lt[0] and Litem[1] == Lt[1]:
             return True
     return False
 
@@ -176,7 +186,7 @@ class FamilyAnalyzer(object):
         self.Result_ancestors_inbreed = ""
         self.Result_ancestors_corrcoef = ""
         self.relagraph_ancestors_inbreed = []
-        self.relagraph_ancestors_corrcoef = []
+        self.All_Egde_for_Visual = []
 
     def add_generation(self, new_vertices, new_parents):
         # 计数新的个体
@@ -358,7 +368,7 @@ class FamilyAnalyzer(object):
         # for i in del_list[::-1]:
         #     del L_common[i]
 
-        print("============================================")
+        # print("============================================")
         # # 所有前驱结点及其路径
         # for i in range(len(L1)):
         #     print(self.__invIdx(L1[i][0]), [self.__invIdx(val) for val in L1[i][1]])
@@ -377,23 +387,13 @@ class FamilyAnalyzer(object):
         res = []
         # print(L1)
         # print(L2)
-        print("[", end='')
+        # print("[", end='')
         for i in range(len(marked)):
             if marked[i]:
                 res.append(self.__invIdx(L_common[i][0]))
-                print(self.__invIdx(L_common[i][0]), end=', ')
-
-                for j in range(len(L1[i][1]) - 1):
-                    if self.inv_vertex_list[L1[i][1][j]].depth - 1 == self.inv_vertex_list[L1[i][1][j + 1]].depth:
-                        if not list_contrain(self.relagraph_ancestors_inbreed, [L1[i][1][j], L1[i][1][j + 1]]):
-                            self.relagraph_ancestors_inbreed.append([L1[i][1][j], L1[i][1][j + 1]])
-                for j in range(len(L2[i][1]) - 1):
-                    if self.inv_vertex_list[L2[i][1][j]].depth - 1 == self.inv_vertex_list[L2[i][1][j + 1]].depth:
-                        if not list_contrain(self.relagraph_ancestors_inbreed, [L2[i][1][j], L2[i][1][j + 1]]):
-                            self.relagraph_ancestors_inbreed.append([L2[i][1][j], L2[i][1][j + 1]])
-
-        print("]")
-        print("***", self.relagraph_ancestors_inbreed)
+        #         print(self.__invIdx(L_common[i][0]), end=', ')
+        # print("]")
+        # print("***", self.relagraph_ancestors_inbreed)
         # print("====")
         # print("[", end='')
         # for i in range(len(marked)):
@@ -484,6 +484,44 @@ class FamilyAnalyzer(object):
         if final in [0, 1]:
             self.Result_ancestors += str(res) + '\n'
         # print(self.Result_ancestors)
+
+        # =================================
+        # =====-----生成可视化图谱------======
+        # =================================
+        if final in [0, 1]:
+            print("===========================")
+            print(common_ancestors)
+            for anc in common_ancestors:
+                paths1 = self.find_all_path(start=ind1, end=anc)
+                paths2 = self.find_all_path(start=ind2, end=anc)
+                print("------------------------------")
+                for item in paths1:
+                    print([self.num_ver - 1 - j for j in item])
+                for item in paths2:
+                    print([self.num_ver - 1 - j for j in item])
+                # 在各自的列表里面找到一对完全不重合的路径
+                pair_path_1, pair_path_2 = None, None
+                for p1 in paths1:
+                    for p2 in paths2:
+                        if path_neq(p1, p2):
+                            pair_path_1, pair_path_2 = [self.num_ver - 1 - j for j in p1], [self.num_ver - 1 - j for j
+                                                                                            in p2]
+                            break
+                        else:
+                            continue
+                # All_Egde_for_Visual.extend([(pair_path_1[j], pair_path_1[j+1]) for j in range(len(pair_path_1)-1)])
+                # All_Egde_for_Visual.extend([(pair_path_2[j], pair_path_2[j+1]) for j in range(len(pair_path_2)-1)])
+                print(pair_path_1, pair_path_2)
+                # print(All_Egde_for_Visual)
+                print("------------------------------")
+                for j in range(len(pair_path_1) - 1):
+                    if not list_contrain(self.All_Egde_for_Visual, [pair_path_1[j], pair_path_1[j + 1]]):
+                        self.All_Egde_for_Visual.append([pair_path_1[j], pair_path_1[j + 1]])
+                for j in range(len(pair_path_2) - 1):
+                    if not list_contrain(self.All_Egde_for_Visual, [pair_path_2[j], pair_path_2[j + 1]]):
+                        self.All_Egde_for_Visual.append([pair_path_2[j], pair_path_2[j + 1]])
+            print("===========================")
+
         return res
 
     def calc_inbreed_coef(self, indi: int, final: int = 4) -> float:
@@ -502,13 +540,13 @@ class FamilyAnalyzer(object):
         if len(parent) == 0:
             self.inv_vertex_list[self.__invIdx(indi)].inbreed_coef = 0.
             return 0.
-        if not list_contrain(self.relagraph_ancestors_inbreed, [indi, parent[0]]):
-            self.relagraph_ancestors_inbreed.append([indi, parent[0]])
-        if not list_contrain(self.relagraph_ancestors_inbreed, [indi, parent[1]]):
-            self.relagraph_ancestors_inbreed.append([indi, parent[1]])
+        if not list_contrain(self.All_Egde_for_Visual, [indi, parent[0]]):
+            self.All_Egde_for_Visual.append([indi, parent[0]])
+        if not list_contrain(self.All_Egde_for_Visual, [indi, parent[1]]):
+            self.All_Egde_for_Visual.append([indi, parent[1]])
         # print(self.relagraph_ancestors_inbreed)
-        print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
         if final == 0:
+            print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
             self.Result_ancestors = f"个体 {self.__name(indi)} 的父母的编号:[{self.__name(parent[0])} 和 {self.__name(parent[1])}]。\n"
         parent_kc = self.calc_kinship_corr(parent[0], parent[1], final=final + 1)
         if parent_kc < 1e-9:
@@ -571,11 +609,15 @@ if __name__ == "__main__":
     # analyzer.calc_path_prob(16, 17, 0)
     # print(analyzer.calc_inbreed_coef(2))
     # print(analyzer.calc_inbreed_coef(9))
-    # print(analyzer.calc_inbreed_coef(26))
-    print(analyzer.calc_kinship_corr(24, 25))
-    print("---------------------------")
-    for iten in analyzer.relagraph_ancestors_inbreed:
-        print(iten)
+    print(analyzer.calc_inbreed_coef(26))
+    print(analyzer.All_Egde_for_Visual)
+    analyzer.All_Egde_for_Visual = []
+    print(analyzer.calc_kinship_corr(24, 25, final=0))
+    print(analyzer.All_Egde_for_Visual)
+    print("------------[0, 3, 5, 10, 12, 18, 19, 21]---------------")
+    # for iten in analyzer.relagraph_ancestors_inbreed:
+    #     print(iten)
+    # print(analyzer.Result_ancestors)
     # print(analyzer.calc_inbreed_coef(24))
     # print(analyzer.find_all_common_ancestors(21, 22))
     # print(analyzer.find_all_common_ancestors(24, 25))

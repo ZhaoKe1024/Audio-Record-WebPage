@@ -517,9 +517,8 @@ class FamilyAnalyzer(object):
                 for p1 in paths1:
                     for p2 in paths2:
                         if path_neq(p1, p2):
-                            pair_path_1, pair_path_2 = [self.num_ver - 1 - j for j in p1], [self.num_ver - 1 - j for j
-                                                                                            in p2]
-                                self.inv_vertex_list[j].depth for j in p2]
+                            pair_path_1, pair_path_2 = [self.num_ver - 1 - j for j in p1], [self.num_ver - 1 - j for j in p2]
+                            pair_depth_1, pair_depth_2 = [self.inv_vertex_list[j].depth for j in p1], [self.inv_vertex_list[j].depth for j in p2]
                             break
                         else:
                             continue

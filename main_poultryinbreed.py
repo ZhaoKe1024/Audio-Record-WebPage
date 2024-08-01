@@ -10,6 +10,7 @@ import logging
 from flask import Flask, request, jsonify, render_template, send_file
 
 from gevent import pywsgi
+# from inbreed_lib.analyzer.commonAncestors import
 from inbreed_lib.procedure.kinship_on_graph import Kinship
 from inbreed_lib.BreedingMain import run_main
 from inbreed_lib.func import NullNameException
@@ -68,9 +69,12 @@ class IBCalculator(object):
         p1, p2 = p1.strip(), p2.strip()
         print(p1, p2)
         try:
+            self.kinship.analyzer.All_Egde_for_Visual = []
             res = self.kinship.calc_kinship_corr(p1=p1, p2=p2)
             print(res)
             print(self.kinship.analyzer.get_just_message())
+
+
         except NullNameException as e:
             logging.exception(e)
 
@@ -81,6 +85,7 @@ class IBCalculator(object):
         if '.' in ct or ct == '':
             raise Exception("请输入1个自然数编号")
         try:
+            self.kinship.analyzer.All_Egde_for_Visual = []
             res = self.kinship.calc_inbreed_coef(p=ct)
             print(res)
             print(self.kinship.analyzer.get_just_message())

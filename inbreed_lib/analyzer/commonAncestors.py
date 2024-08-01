@@ -154,6 +154,18 @@ def list_contrain(LList, Lt):
     return False
 
 
+def object_contrain(AllEdgeDepth, ot):
+    if len(AllEdgeDepth) == 0:
+        return False
+    print("*********")
+    print(AllEdgeDepth)
+    print(ot)
+    for Oitem in AllEdgeDepth:
+        if Oitem[0][0] == ot[0][0] and Oitem[1][0] == ot[1][0]:
+            return True
+    return False
+
+
 class FamilyAnalyzer(object):
     def __init__(self, familyGraph: LayerNetworkGraph):
         self.familyGraph = familyGraph
@@ -501,32 +513,38 @@ class FamilyAnalyzer(object):
                     print([self.num_ver - 1 - j for j in item])
                 # 在各自的列表里面找到一对完全不重合的路径
                 pair_path_1, pair_path_2 = None, None
+                pair_depth_1, pair_depth_2 = None, None
                 for p1 in paths1:
                     for p2 in paths2:
                         if path_neq(p1, p2):
                             pair_path_1, pair_path_2 = [self.num_ver - 1 - j for j in p1], [self.num_ver - 1 - j for j
                                                                                             in p2]
+                                self.inv_vertex_list[j].depth for j in p2]
                             break
                         else:
                             continue
                 # All_Egde_for_Visual.extend([(pair_path_1[j], pair_path_1[j+1]) for j in range(len(pair_path_1)-1)])
                 # All_Egde_for_Visual.extend([(pair_path_2[j], pair_path_2[j+1]) for j in range(len(pair_path_2)-1)])
+                print(pair_depth_1, pair_depth_2)
                 print(pair_path_1, pair_path_2)
                 # print(All_Egde_for_Visual)
                 print("------------------------------")
                 for j in range(len(pair_path_1) - 1):
-                    if not list_contrain(self.All_Egde_for_Visual, [pair_path_1[j], pair_path_1[j + 1]]):
-                        self.All_Egde_for_Visual.append([pair_path_1[j], pair_path_1[j + 1]])
+                    if not object_contrain(self.All_Egde_for_Visual, ((pair_path_1[j], pair_depth_1[j]),
+                                                                      (pair_path_1[j + 1], pair_depth_1[j + 1]))):
+                        self.All_Egde_for_Visual.append(
+                            ((pair_path_1[j], pair_depth_1[j]), (pair_path_1[j + 1], pair_depth_1[j + 1])))
                 for j in range(len(pair_path_2) - 1):
-                    if not list_contrain(self.All_Egde_for_Visual, [pair_path_2[j], pair_path_2[j + 1]]):
-                        self.All_Egde_for_Visual.append([pair_path_2[j], pair_path_2[j + 1]])
+                    if not object_contrain(self.All_Egde_for_Visual, ((pair_path_2[j], pair_depth_2[j]),
+                                                                      (pair_path_2[j + 1], pair_depth_2[j + 1]))):
+                        self.All_Egde_for_Visual.append(
+                            ((pair_path_2[j], pair_depth_2[j]), (pair_path_2[j + 1], pair_depth_2[j + 1])))
             print("===========================")
 
         return res
 
     def calc_inbreed_coef(self, indi: int, final: int = 4) -> float:
         """
-
         :param indi:
         :param final: default 3 so that wonn't raise Exception
         :return:
@@ -540,10 +558,13 @@ class FamilyAnalyzer(object):
         if len(parent) == 0:
             self.inv_vertex_list[self.__invIdx(indi)].inbreed_coef = 0.
             return 0.
-        if not list_contrain(self.All_Egde_for_Visual, [indi, parent[0]]):
-            self.All_Egde_for_Visual.append([indi, parent[0]])
-        if not list_contrain(self.All_Egde_for_Visual, [indi, parent[1]]):
-            self.All_Egde_for_Visual.append([indi, parent[1]])
+        d = self.inv_vertex_list[self.__invIdx(indi)].depth
+        p1d = self.inv_vertex_list[self.__invIdx(parent[0])].depth
+        p2d = self.inv_vertex_list[self.__invIdx(parent[1])].depth
+        if not object_contrain(self.All_Egde_for_Visual, ((indi, d), (parent[0], p1d))):
+            self.All_Egde_for_Visual.append(((indi, d), (parent[0], p1d)))
+        if not list_contrain(self.All_Egde_for_Visual, ((indi, d), (parent[1], p2d))):
+            self.All_Egde_for_Visual.append(((indi, d), (parent[1], p2d)))
         # print(self.relagraph_ancestors_inbreed)
         if final == 0:
             print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
@@ -609,8 +630,8 @@ if __name__ == "__main__":
     # analyzer.calc_path_prob(16, 17, 0)
     # print(analyzer.calc_inbreed_coef(2))
     # print(analyzer.calc_inbreed_coef(9))
-    print(analyzer.calc_inbreed_coef(26))
-    print(analyzer.All_Egde_for_Visual)
+    # print(analyzer.calc_inbreed_coef(26))
+    # print(analyzer.All_Egde_for_Visual)
     analyzer.All_Egde_for_Visual = []
     print(analyzer.calc_kinship_corr(24, 25, final=0))
     print(analyzer.All_Egde_for_Visual)

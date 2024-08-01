@@ -6,15 +6,15 @@
 # @Software: PyCharm
 import os
 pack_list = [
-    "numpy==1.24.4",
-    "pandas==1.5.3",
-    "openpyxl==3.1.2",
-    "flask==2.3.3",
-    "gevent==24.2.1",
-    "click==8.1.2",
-    # "flask-wtf==1.2.1",  # wtforms==3.1.2, click==8.1.7
-    "pymysql==1.1.1",
-    "sqlalchemy==2.0.23",
+    # "numpy==1.24.4",
+    # "pandas==1.5.3",
+    # "openpyxl==3.1.2",
+    # "flask==2.3.3",
+    # "gevent==24.2.1",
+    # "click==8.1.2",
+    "pyecharts",
+    # "pymysql==1.1.1",
+    # "sqlalchemy==2.0.23",
     # "xlrd",
 ]
 for packa in pack_list:

@@ -35,7 +35,7 @@ def get_df_from_xlsx(filepath="./历代配种方案及出雏对照2021.xlsx", sh
         df_table = pd.read_excel(filepath, header=0, index_col=None,
                                  usecols=cols)  # about reading xlsx file
     else:
-        raise Exception("Unknown input format.")
+        raise Exception("Unknown input format of file: {}.".format(filepath))
     parent_df = df_table.dropna(axis=0).astype(int)
     return parent_df
 

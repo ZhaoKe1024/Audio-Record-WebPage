@@ -24,14 +24,16 @@ CHUNK_SIZE = 1024 * 1024
 MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20M
 form_save_mode = 0  # mysql 0, local json file 1,
 
-save_dir = "./temp_files/"
-
-
+save_dir = "./static/temp_files/"
+print(os.path.exists(save_dir), save_dir)
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir, exist_ok=True)
+print(os.path.exists(save_dir), save_dir)
 class IBCalculator(object):
     def __init__(self):
         super(IBCalculator, self).__init__()
-        self.file_root = "./temp_files/"
-        if os.path.exists(self.file_root):
+        self.file_root = "/temp_files/"
+        if not os.path.exists(self.file_root):
             os.makedirs(self.file_root)
         self.analyse_template = self.file_root + "input_template.xlsx"
         self.file_to_analyze = None
@@ -67,30 +69,38 @@ class IBCalculator(object):
         self.check_kinship()
 
         p1, p2 = p1.strip(), p2.strip()
-        print(p1, p2)
+        # print(p1, p2)
+        res, save_path = None, None
+        vset, eset, posset = None, None, None
         try:
             self.kinship.analyzer.All_Egde_for_Visual = []
             res = self.kinship.calc_kinship_corr(p1=p1, p2=p2)
-            print(res)
+            # print(res)
             print(self.kinship.analyzer.get_just_message())
-            generate_relation_plot(self.kinship.analyzer.All_Egde_for_Visual, save_path="./temp_files/corrcoef_{}.html".format(get_cur_timestr()))
+            save_path = save_dir+"corrcoef_{}.html".format(get_cur_timestr())
+            vset, eset, posset = generate_relation_plot(self.kinship.analyzer.All_Egde_for_Visual, save_path=save_path)
         except NullNameException as e:
             logging.exception(e)
+        return res, vset, eset, posset
 
     def calc_inbrcoef(self, ct: str):
         """计算近交系数"""
         self.check_kinship()
         ct = ct.strip()
+        res, save_path = None, None
+        vset, eset, posset = None, None, None
         if '.' in ct or ct == '':
             raise Exception("请输入1个自然数编号")
         try:
             self.kinship.analyzer.All_Egde_for_Visual = []
             res = self.kinship.calc_inbreed_coef(p=ct)
-            print(res)
+            # print(res)
             print(self.kinship.analyzer.get_just_message())
-            generate_relation_plot(self.kinship.analyzer.All_Egde_for_Visual, save_path="./temp_files/inbrcoef_{}.html".format(get_cur_timestr()))
+            save_path = save_dir+"inbrcoef_{}.html".format(get_cur_timestr())
+            vset, eset, posset = generate_relation_plot(self.kinship.analyzer.All_Egde_for_Visual, save_path=save_path)
         except NullNameException as e:
             logging.exception(e)
+        return res, vset, eset, posset
 
     def evaluate_solution(self):
         self.check_kinship()
@@ -217,12 +227,12 @@ def calculate():
         else:
             raise Exception("Error Unknown Method, only support \'GET\' or \'POST\'.")
         if mode == "single":
-            res = calc.kinship.calc_inbreed_coef(p=p)
+            res, vset, eset, posset = calc.calc_inbrcoef(ct=p)
         elif mode == "double":
-            res = calc.kinship.calc_kinship_corr(p1=p1, p2=p2)
+            res, vset, eset, posset = calc.calc_corrcoef(p1=p1, p2=p2)
         else:
             raise Exception("Error mode, only support \'single\' or \'double\'.")
-        return jsonify(response={"res": res, "log": calc.kinship.analyzer.get_just_message()})
+        return jsonify(response={"res": res, "vset": vset, "eset": eset, "posset": posset, "log": calc.kinship.analyzer.get_just_message()})
         # json_tosave = {}
         # for key in info_table:
         #     print(key, '\t', info_table[key])

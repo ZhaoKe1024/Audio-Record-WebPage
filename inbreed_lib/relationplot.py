@@ -7,7 +7,8 @@
 import random
 from pyecharts import options as opts
 from pyecharts.charts import Graph
-
+from pyecharts.render import make_snapshot
+from snapshot_selenium import snapshot as driver
 
 # vertices = list(range(27))
 # graph = [[10, 0], [10, 2], [12, 3], [12, 5], [18, 10], [18, 13], [13, 3], [13, 5], [19, 12], [19, 14], [14, 6], [14, 7],
@@ -64,45 +65,47 @@ def generate_relation_plot(vertices_depth_edges, save_path="graph_with_edge_opti
         top_m = 4
         for i, node in enumerate(nlist):
             graph_v.append(node[0])
-            xy.append((j * h_margin, top_m + i * v_margin))
+            xy.append([j * h_margin, top_m + i * v_margin])
     graph_e = []
     for obj_item in vertices_depth_edges:
-        graph_e.append((obj_item[0][0], obj_item[1][0]))
+        graph_e.append([obj_item[0][0], obj_item[1][0]])
     print(graph_v)
     print(xy)
     print(graph_e)
+    return graph_v, graph_e, xy
     # # vertices = [1, 2, 3, 4, 5, 6]
     # # graph = [[1, 4], [2, 4], [2, 5], [3, 5], [4, 6], [5, 6]]
     #
     # # xy = [[0, 5], [0, 8], [0, 11], [2, 7], [2, 9], [4, 8]]
     # # x left margin,  y: top margin
-    nodes_data = [opts.GraphNode(x=xy[j][0] * h_margin, y=xy[j][1], name="{}".format(graph_v[j]), symbol_size=20) for j
-                  in
-                  range(len(graph_v))]
-    links_data = []
-    for item in graph_e:
-        links_data.append(opts.GraphLink(source="{}".format(item[0]), target="{}".format(item[1]), value=2))
-    # print(nodes_data)
-    # print(xy)
-    # print(links_data)
-    c = (
-        Graph()
-        .add(
-            "Poultry Relation",
-            nodes_data,
-            links_data,
-            repulsion=4000,
-            edge_label=opts.LabelOpts(
-                is_show=True, position="middle", formatter="{b}:{c}"
-            ),
-            edge_symbol=["none", "arrow"],
-            layout="none"
-        )
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title="Graph-GraphNode-GraphLink-WithEdgeLabel")
-        )
-        .render(save_path)
-    )
+    # nodes_data = [opts.GraphNode(x=xy[j][0] * h_margin, y=xy[j][1], name="{}".format(graph_v[j]), symbol_size=20) for j
+    #               in
+    #               range(len(graph_v))]
+    # links_data = []
+    # for item in graph_e:
+    #     links_data.append(opts.GraphLink(source="{}".format(item[0]), target="{}".format(item[1]), value=2))
+    # # print(nodes_data)
+    # # print(xy)
+    # # print(links_data)
+    # c = (
+    #     Graph()
+    #     .add(
+    #         "Poultry Relation",
+    #         nodes_data,
+    #         links_data,
+    #         repulsion=4000,
+    #         edge_label=opts.LabelOpts(
+    #             is_show=True, position="middle", formatter="{b}:{c}"
+    #         ),
+    #         edge_symbol=["none", "arrow"],
+    #         layout="none"
+    #     )
+    #     .set_global_opts(
+    #         title_opts=opts.TitleOpts(title="Graph-GraphNode-GraphLink-WithEdgeLabel")
+    #     )
+    #     .render(save_path)
+    # )
+    # make_snapshot(driver, c, "test.png")
 
 
 if __name__ == '__main__':

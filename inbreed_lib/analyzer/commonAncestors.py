@@ -157,9 +157,9 @@ def list_contrain(LList, Lt):
 def object_contrain(AllEdgeDepth, ot):
     if len(AllEdgeDepth) == 0:
         return False
-    print("*********")
-    print(AllEdgeDepth)
-    print(ot)
+    # print("*********")
+    # print(AllEdgeDepth)
+    # print(ot)
     for Oitem in AllEdgeDepth:
         if Oitem[0][0] == ot[0][0] and Oitem[1][0] == ot[1][0]:
             return True
@@ -501,16 +501,16 @@ class FamilyAnalyzer(object):
         # =====-----生成可视化图谱------======
         # =================================
         if final in [0, 1]:
-            print("===========================")
-            print(common_ancestors)
+            # print("===========================")
+            # print(common_ancestors)
             for anc in common_ancestors:
                 paths1 = self.find_all_path(start=ind1, end=anc)
                 paths2 = self.find_all_path(start=ind2, end=anc)
-                print("------------------------------")
-                for item in paths1:
-                    print([self.num_ver - 1 - j for j in item])
-                for item in paths2:
-                    print([self.num_ver - 1 - j for j in item])
+                # print("------------------------------")
+                # for item in paths1:
+                #     print([self.num_ver - 1 - j for j in item])
+                # for item in paths2:
+                #     print([self.num_ver - 1 - j for j in item])
                 # 在各自的列表里面找到一对完全不重合的路径
                 pair_path_1, pair_path_2 = None, None
                 pair_depth_1, pair_depth_2 = None, None
@@ -524,10 +524,10 @@ class FamilyAnalyzer(object):
                             continue
                 # All_Egde_for_Visual.extend([(pair_path_1[j], pair_path_1[j+1]) for j in range(len(pair_path_1)-1)])
                 # All_Egde_for_Visual.extend([(pair_path_2[j], pair_path_2[j+1]) for j in range(len(pair_path_2)-1)])
-                print(pair_depth_1, pair_depth_2)
-                print(pair_path_1, pair_path_2)
-                # print(All_Egde_for_Visual)
-                print("------------------------------")
+                # print(pair_depth_1, pair_depth_2)
+                # print(pair_path_1, pair_path_2)
+                # # print(All_Egde_for_Visual)
+                # print("------------------------------")
                 for j in range(len(pair_path_1) - 1):
                     if not object_contrain(self.All_Egde_for_Visual, ((pair_path_1[j], pair_depth_1[j]),
                                                                       (pair_path_1[j + 1], pair_depth_1[j + 1]))):
@@ -538,7 +538,7 @@ class FamilyAnalyzer(object):
                                                                       (pair_path_2[j + 1], pair_depth_2[j + 1]))):
                         self.All_Egde_for_Visual.append(
                             ((pair_path_2[j], pair_depth_2[j]), (pair_path_2[j + 1], pair_depth_2[j + 1])))
-            print("===========================")
+            # print("===========================")
 
         return res
 

@@ -15,7 +15,7 @@ from inbreed_lib.procedure.kinship_on_graph import Kinship
 from inbreed_lib.BreedingMain import run_main
 from inbreed_lib.func import NullNameException
 from inbreed_lib.graphfromtable import get_df_from_xlsx, get_graph_from_data
-
+from inbreed_lib.relationplot import generate_relation_plot
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.jinja_env.variable_start_string = '<<'
 app.jinja_env.variable_end_string = '>>'
@@ -73,8 +73,7 @@ class IBCalculator(object):
             res = self.kinship.calc_kinship_corr(p1=p1, p2=p2)
             print(res)
             print(self.kinship.analyzer.get_just_message())
-
-
+            generate_relation_plot(self.kinship.analyzer.All_Egde_for_Visual, save_path="./temp_files/corrcoef_{}.html".format(get_cur_timestr()))
         except NullNameException as e:
             logging.exception(e)
 
@@ -89,6 +88,7 @@ class IBCalculator(object):
             res = self.kinship.calc_inbreed_coef(p=ct)
             print(res)
             print(self.kinship.analyzer.get_just_message())
+            generate_relation_plot(self.kinship.analyzer.All_Egde_for_Visual, save_path="./temp_files/inbrcoef_{}.html".format(get_cur_timestr()))
         except NullNameException as e:
             logging.exception(e)
 

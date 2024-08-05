@@ -4,9 +4,10 @@
 # @Author: ZhaoKe
 # @File : myself.py
 # @Software: PyCharm
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, redirect, url_for
 from gevent import pywsgi
 from zkmusic_sql import sqlalchemy_test
+
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.jinja_env.variable_start_string = '<<'
 app.jinja_env.variable_end_string = '>>'
@@ -19,6 +20,15 @@ def index():
 
 @app.route('/all_music')
 def get_music_list():
+    data = sqlalchemy_test()
+    print(data)
+    return jsonify(response={"data": data})
+
+
+@app.route('/zkmusic')
+def go_music():
+    # return redirect(url_for('./zkmusiclist.html'))
+    return render_template('./zkmusiclist.html')
 
 
 if __name__ == '__main__':

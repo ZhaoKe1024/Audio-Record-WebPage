@@ -71,6 +71,8 @@
 		// 	}
 		// })
 
+
+
 		function writelist(data) {
 			var showfilebody = document.getElementById('showfilebody');
 			var tdstr = '';
@@ -94,7 +96,40 @@
 			showfilebody.innerHTML = tdstr;
 		}
 
-		data = [['空奏列車', 'VSinger', '初音ミク', 'orangestar', 'orangestar', 'orangestar', 'vocaloid', 'None', 'None'], ['海上花', '华语经典', '甄妮', '罗大佑', '罗大佑', '', 'None', 'None', 'None'], ['故乡', '华语经典', '许巍', '许巍', '许巍', '', 'Rock', 'None', 'None'], ['123木头人', '华语伤感', '夏淮笙(COVER:黑Girl)', '王雅君', '徐婕儿/王雅君', '', '非主流,伤感', 'None', 'None'], ['明天会更好', '好听的音色', '夏淮笙(Cover:罗大佑)', '罗大佑', '罗大佑', '', '可爱的声音', 'None', 'None'], ['写给我第一个喜欢的女孩的歌', '好听的音色', '封茗囧菌(Cover:洛天依)', 'ilem', 'ilem', 'ilem', '可爱的声音', 'None', 'None'], ["Don't Break My Heart", '华语伤感', '黑豹乐队', '窦唯', '窦唯', '', '酒吧', 'None', 'None'], ['New Boy', '华语经典', '朴树', '朴树', '朴树', '朴树', '酒吧', 'None', 'None'], ['浅唱', '华语伤感', '许嵩', '许嵩', '许嵩', '许嵩', '伤感的心情', 'None', 'None'], ['小妹', '华语经典', '罗大佑', '罗大佑', '罗大佑', '罗大佑', '伤感人生', '未来的主人翁', 'None'], ['偶尔还是会想起你', '华语伤感', '牛奶咖啡', '格非', 'kiki王程浩', '', '伤感人生', '时间的光', 'None'], ['入秋的第一场雨真让人矫情', '华语伤感', 'ChiliChill', 'ChiliChill', 'ChiliChill', 'ChiliChill', '伤感人生', '每到夜里我就很饿', 'None'], ['爱的代价', '华语伤感', '张艾嘉', '李宗盛', '李宗盛', '李宗盛', '伤感人生', '爱的代价', 'None']];
-		writelist(data);
+		function get_music_list() {
+			var xhr = new XMLHttpRequest();
+			var URL_v = "all_music"
+			xhr.open("GET", URL_v, true);
+			// xhr.sestRequestHeader('Content-Type','application/json');
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4 && xhr.status === 200) {
+					// console.log(xhr.responseText);
+					var response = JSON.parse(xhr.responseText);
+					// console.log(response["response"]);
+					var resp = response["response"]["data"];
+					console.log(resp);
+					writelist(resp);
+				}
+			};
+			xhr.send();
+		}
+		get_music_list();
+		/*
+				data = [
+					['空奏列車', 'VSinger', '初音ミク', 'orangestar', 'orangestar', 'orangestar', 'vocaloid', 'None', 'None'],
+					['海上花', '华语经典', '甄妮', '罗大佑', '罗大佑', '', 'None', 'None', 'None'],
+					['故乡', '华语经典', '许巍', '许巍', '许巍', '', 'Rock', 'None', 'None'],
+					['123木头人', '华语伤感', '夏淮笙(COVER:黑Girl)', '王雅君', '徐婕儿/王雅君', '', '非主流,伤感', 'None', 'None'],
+					['明天会更好', '好听的音色', '夏淮笙(Cover:罗大佑)', '罗大佑', '罗大佑', '', '可爱的声音', 'None', 'None'],
+					['写给我第一个喜欢的女孩的歌', '好听的音色', '封茗囧菌(Cover:洛天依)', 'ilem', 'ilem', 'ilem', '可爱的声音', 'None', 'None'],
+					["Don't Break My Heart", '华语伤感', '黑豹乐队', '窦唯', '窦唯', '', '酒吧', 'None', 'None'],
+					['New Boy', '华语经典', '朴树', '朴树', '朴树', '朴树', '酒吧', 'None', 'None'],
+					['浅唱', '华语伤感', '许嵩', '许嵩', '许嵩', '许嵩', '伤感的心情', 'None', 'None'],
+					['小妹', '华语经典', '罗大佑', '罗大佑', '罗大佑', '罗大佑', '伤感人生', '未来的主人翁', 'None'],
+					['偶尔还是会想起你', '华语伤感', '牛奶咖啡', '格非', 'kiki王程浩', '', '伤感人生', '时间的光', 'None'],
+					['入秋的第一场雨真让人矫情', '华语伤感', 'ChiliChill', 'ChiliChill', 'ChiliChill', 'ChiliChill', '伤感人生', '每到夜里我就很饿', 'None'],
+					['爱的代价', '华语伤感', '张艾嘉', '李宗盛', '李宗盛', '李宗盛', '伤感人生', '爱的代价', 'None']
+				];
+				writelist(data);*/
 	</script>
 </html>

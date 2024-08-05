@@ -6,7 +6,7 @@
 # @Software: PyCharm
 from flask import Flask, render_template
 from gevent import pywsgi
-
+from zkmusic_sql import sqlalchemy_test
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.jinja_env.variable_start_string = '<<'
 app.jinja_env.variable_end_string = '>>'
@@ -15,6 +15,10 @@ app.jinja_env.variable_end_string = '>>'
 @app.route('/')
 def index():
     return render_template("./myself.html")
+
+
+@app.route('/all_music')
+def get_music_list():
 
 
 if __name__ == '__main__':

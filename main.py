@@ -90,7 +90,7 @@ def get_chunk():
 def upload():
     try:
         info_table = request.form
-        # print(info_table['jsondata'])
+        print(info_table)
         # samples = np.frombuffer(info_table['audio'], dtype=np.int16)
         # fname = "test_audio_000.wav"
         # soundfile.write(
@@ -103,20 +103,22 @@ def upload():
         # 将音频文件保存到服务器上的指定路径
         # audio_file.save('./audio/test_audio_000.wav')
         resp_message = "Data received successfully!\n"
-    except Exception as e:
-        print(e)
-        print("Get form data from request failed!")
-    try:
-        # info_table['filename'] = fname
-        print("get form:")
-        print(info_table)
-        insert_use_dict(info_table)
-        resp_message += "Data insert into database successfully!"
         response = {"message": resp_message}
         return jsonify(response)
     except Exception as e:
         print(e)
-        print("Insert into MySQL database Failed!!")
+        print("Get form data from request failed!")
+    # try:
+    #     # info_table['filename'] = fname
+    #     print("get form:")
+    #     print(info_table)
+    #     insert_use_dict(info_table)
+    #     resp_message += "Data insert into database successfully!"
+    #     response = {"message": resp_message}
+    #     return jsonify(response)
+    # except Exception as e:
+    #     print(e)
+    #     print("Insert into MySQL database Failed!!")
 
 
 @app.route('/test_audio', methods=['POST'])

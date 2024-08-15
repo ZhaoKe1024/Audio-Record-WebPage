@@ -222,11 +222,12 @@
 				</li>
 				</my-component>
 			</ol>		
-			<br /><br />
+			<br />
+			<!-- <br />
 			<input type="button" id="start" value="开始录音"/><audio id="audio" controls></audio>
 			<br>
 			<progress id="progressBar" value="0" max="100"></progress>
-			<br />
+			<br /> -->
 			<!-- <button><input type="submit" id="submit_table" name="" onclick="uploadFile()"/></button>
 			<br /> -->
 			<div class="blank">				
@@ -259,7 +260,7 @@
 		<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="../static/js/sui.min.js"></script>
 		<script>
-		
+		/*
 		var chunks = [];
 		var audio_seg;
 		// var reader = new FileReader();
@@ -326,8 +327,8 @@
 				});
 			console.log("音频上传完毕！");	
 		}
-		
-			var data_tosave = {};
+		*/
+		var data_tosave = {};
 		new Vue({
 			el: '#queslist',
 			data: {			  
@@ -841,7 +842,7 @@
 					var jsonData = JSON.stringify(data_tosave);
 					console.log(jsonData);
 					var xhr = new XMLHttpRequest();
-					xhr.open("POST","/test",true);
+					xhr.open("POST","/get_info",true);
 					xhr.setRequestHeader('Content-Type','application/json');
 					xhr.onreadystatechange = function(){
 						if (xhr.readyState === 4 && xhr.status === 200) {
@@ -851,7 +852,7 @@
 					};
 					xhr.send(jsonData);
 					console.log("上传信息完成");
-					uploadFile();
+					// uploadFile();
 					// console.log("上传音频完成");
 				},
 			}

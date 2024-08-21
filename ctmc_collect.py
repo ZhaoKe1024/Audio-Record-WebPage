@@ -23,6 +23,10 @@ if not os.path.exists(save_dir):
     os.makedirs(save_dir, exist_ok=True)
 
 
+def get_cur_date() -> str:
+    return time.strftime("%Y%m%d", time.localtime())
+
+
 def get_cur_timestr() -> str:
     return time.strftime("%Y%m%d%H%M", time.localtime())
 
@@ -53,7 +57,7 @@ def print_dcit():
             print(key, '\t', info_table[key])
             json_tosave[key] = info_table[key]
         new_json_string = json.dumps(json_tosave, ensure_ascii=False)  # 正常显示中文
-        with open(save_dir + f"ctm_data_{get_name()}.json", 'w', encoding='utf_8') as nf:
+        with open(save_dir + f"ctm_data_{get_cur_timestr()}_{get_name()}.json", 'w', encoding='utf_8') as nf:
             nf.write(new_json_string)
         response = {'code': 0, 'message': "table form received successfully!"}
 
@@ -63,6 +67,10 @@ def print_dcit():
         print("Error at request.form")
         response = {'code': -1, 'message': "table form received failed" + str(e)}
         return jsonify(response=response)
+
+
+# if __name__ == '__main__':
+#     print(get_cur_date())
 
 
 if __name__ == '__main__':

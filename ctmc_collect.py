@@ -46,8 +46,36 @@ def get_name():
     return file_cnt
 
 
-@app.route('/get_info', methods=['POST'])
-def print_dcit():
+@app.route('/saveaudio', methods=['POST'])
+def save_audio():
+    print("get request...")
+    print(request.files)
+    print(request.form)
+    if 'file' not in request.files:
+        return 'No file part in the request', 400
+    file = request.files['file']
+
+    # 如果用户没有选择文件，浏览器也会提交一个空部分，没有文件名
+    if file.filename == '':
+        return 'No selected file', 400
+
+    if file:
+        # file.save("./uploads/temp.m4a")
+        # audio_file_path = "./uploads/temp.m4a"
+        audio_file_path = "./recorded_audio/" + request.form['filename']
+        print("savepath:", audio_file_path)
+        file.save(audio_file_path)
+        result = {
+            'code': 200
+        }
+        return jsonify(result)
+
+    else:
+        return 'Only M4A files are allowed', 400
+
+
+@app.route('/saveinfo', methods=['POST'])
+def save_info():
     print("收到信息！")
     try:
         info_table = request.get_json()
@@ -57,7 +85,7 @@ def print_dcit():
             print(key, '\t', info_table[key])
             json_tosave[key] = info_table[key]
         new_json_string = json.dumps(json_tosave, ensure_ascii=False)  # 正常显示中文
-        with open(save_dir + f"ctm_data_{get_cur_timestr()}_{get_name()}.json", 'w', encoding='utf_8') as nf:
+        with open(save_dir + f"ctm_data_{info_table['filename']}.json", 'w', encoding='utf_8') as nf:
             nf.write(new_json_string)
         response = {'code': 0, 'message': "table form received successfully!"}
 

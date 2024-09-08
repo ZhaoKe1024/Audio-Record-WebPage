@@ -7,9 +7,114 @@
 		<script type="text/javascript" src="../static/js/vue.min.js"></script>
 		<link rel="stylesheet" href="../static/css/sui.min.css">
 		<link rel="stylesheet" type="text/css" href="../static/css/mystyle.css">
+		<style>
+			html,
+			body {
+				width: 99.5%;
+				height: 98%;
+			}
+		
+			html {
+				/* background-image: url("/static/img/test.webp"); */
+				background-size: cover;
+			}
+		
+			.dynamic-button {
+				font-size: 10px;
+				color: #000;
+				background-color: lightblue;
+				border: 2px solid purple;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background-color 0.5s ease;
+			}
+		
+			.custom-file-input {
+				position: relative;
+				display: inline-block;
+				font-size: 16px;
+				text-align: center;
+				border-radius: 5px;
+				/* 根据需要设置圆角 */
+				cursor: pointer;
+				/* 设置鼠标悬停时的样式 */
+			}
+		
+			.custom-file-input label {
+				user-select: none;
+				/* 禁止用户选择文本 */
+			}
+		
+			.dynamic-button:hover {
+				background-color: blue;
+				color: white;
+			}
+		
+			.dynamic-button:active {
+				background-color: mediumblue;
+				color: black;
+			}
+		
+			.main {
+				width: 60%;
+				height: 85%;
+				border: 1px gray solid;
+				box-shadow: 1px 1px 1px 1px;
+				/* position: absolute; */
+				text-align: center;
+				left: 20%;
+				top: 5%;
+				background-color: white;
+				opacity: 0.7;
+			}
+		
+			.filebutton {
+				width: 150px;
+				height: 25px;
+				/* position: absolute; */
+				/* text-align: center; */
+				/* left: 15%; */
+				top: 90%;
+			}
+		
+			.submit {
+				width: 80px;
+				height: 30px;
+				/* position: absolute; */
+				/* text-align: center; */
+				font-size: 16px;
+				left: 65%;
+				top: 90%;
+			}
+		
+			.resultShow {
+				width: 100%;
+				height: 5%;
+				/* position: absolute; */
+				box-shadow: 0px 1px 0px 0px;
+				text-align: left;
+				left: 15%;
+				top: 83%;
+			}
+		</style>
 	</head>
 	
 	<body>
+		<div id="Box" style="position: absolute;left:23%; top:15%; width: 55%;height:60%; z-index: 999;">
+		</div>
+		<div id="app">
+			<div class="main">
+				<h1>上传录音音频文件</h1>
+				<div class="resultShow"> 结果：<p v-text="predict" style="display: inline;"></p>
+				</div>
+				<div class="filebutton dynamic-button custom-file-input" onchange="onFileChange()">
+					<label for="myFile" style="display: inline-block; width: 100%; height: 100%; ">选择文件</label>
+					<input type="file" id="myFile" style="width: 100%; height: 100%;display: none;">
+				</div>
+				<!-- <input type="button" name="" id="" value="" /> -->
+				<input type="button" class="submit dynamic-button" value="上传" onclick="uploadFile()" />
+			</div>
+		</div>
 	<div class="container-fluid">
 		<div class="blank"></div>
 		<h4 class="totaltitle">中医体质调查问卷</h4>
@@ -222,12 +327,11 @@
 				</li>
 				</my-component>
 			</ol>		
-			<br />
-			<!-- <br />
+			<br /><br />
 			<input type="button" id="start" value="开始录音"/><audio id="audio" controls></audio>
 			<br>
 			<progress id="progressBar" value="0" max="100"></progress>
-			<br /> -->
+			<br />
 			<!-- <button><input type="submit" id="submit_table" name="" onclick="uploadFile()"/></button>
 			<br /> -->
 			<div class="blank">				
@@ -257,81 +361,68 @@
 			<div class="blank"></div>
 		</div>
 		
-		<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
-		<script type="text/javascript" src="../static/js/sui.min.js"></script>
+<!-- 		<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="../static/js/sui.min.js"></script> -->
 		<script>
-		/*
-		var chunks = [];
-		var audio_seg;
-		// var reader = new FileReader();
-		if (navigator.mediaDevices.getUserMedia){
-			const constraints = {audio: true};
-			navigator.mediaDevices.getUserMedia(constraints).then(
-				stream => {
-					console.log("授权成功!");
-					const recordBtn = document.querySelector("#start");
-					const mediaRecorder = new MediaRecorder(stream);
-					recordBtn.onclick = () => {
-						if (mediaRecorder.state === "recording"){
-							mediaRecorder.stop();
-							// console.log(chunks);
-							mediaRecorder.onstop = e => {
-								var blob = new Blob(chunks, {type: "audio/ogg; codecs=opus"});
-								audio_seg = blob;
-								var audioURL = window.URL.createObjectURL(blob);
-								const audioSrc = document.querySelector("#audio");
-								audioSrc.src = audioURL;
-								chunks = [];
-							};
-							recordBtn.textContent = "record";
-							console.log("录音结束");
-							
-						}else{
-							mediaRecorder.start();
-							mediaRecorder.ondataavailable = function(e){
-								chunks.push(e.data);
-							};
-							// console.log(chunks);
-							console.log("录音中...");
-							recordBtn.textContent = "stop";
-						}
-						console.log("录音器状态：", mediaRecorder.state);
-					};
-				}, 
-				() => {console.log("授权失败！")}
-			);
-		}else{
-			console.error("浏览器不支持 getUserMedia");
-		}
-		
-		async function uploadFile(){
-			// console.log("先上传分块数据。");
-			var filename_prefix = "temp_chunk_file_5";
 			
-			const formAudio = new FormData();
-			
-			formAudio.append('audio', audio_seg);
-			formAudio.append('filename', filename_prefix);
-			formAudio.append("sr", 16000);
-			// console.log("FormData to be uploaded:");
-			// console.log(formAudio);
-			await fetch('/postchunk',{
-				method: 'POST',
-				// 不知道为啥，加上请求头就出错
-				// headers:{'Content-Type': 'multipart/form-data'},
-				body: formAudio,
-			}).then((response) => {
-				console.log("返回值：")
-				console.log(response.json());
-				// isubmit = 1;
+			var audio_upload_flag = -1;
+			var selectedFile = null;
+			function onFileChange() {
+				console.log("选中文件");
+				selectedFile = document.getElementById("myFile").files[0];
+			}
+			function uploadFile() {
+				console.log("uploadFile procedure start...");
+				console.log(selectedFile);
+				if (!selectedFile) {
+					alert('请选择文件');
+					return;
+				}
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = ('0' + (now.getMonth() + 1)).slice(-2);
+				const day = ('0' + now.getDate()).slice(-2);
+				const hours = ('0' + now.getHours()).slice(-2);
+				const minutes = ('0' + now.getMinutes()).slice(-2);
+				const seconds = ('0' + now.getSeconds()).slice(-2);
+				const formattedTime = year + month + day + hours + minutes + seconds;
+				
+				const formData = new FormData();
+				formData.append('file', selectedFile);
+				formData.append('filename', "audiodata_"+formattedTime+".wav");
+				try {
+					uploadToServer(formData);
+				} catch (error) {
+					console.error('上传失败:', error);
+					audio_upload_flag = -1;
+				}
+			}
+			function uploadToServer(formData) {
+				fetch("/saveaudio", {
+					method: 'POST',
+					// headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+					body: formData,
+				}).then(response => {
+					if (!response.ok) {
+						throw new Error('文件上传失败');
+					}
+					return response.json();
+				}).then(data => {
+					// 在这里处理你的数据  
+					console.log(data);
+					audio_upload_flag = 1;
+					console.log("上传成功");
+				})
+				.catch(error => {
+					// 处理请求失败的情况  
+					console.error('There was a problem with your fetch operation:', error);
 				});
-			console.log("音频上传完毕！");	
-		}
-		*/
-		var data_tosave = {};
+			}
+			
+			var data_tosave = {};
 		new Vue({
 			el: '#queslist',
-			data: {			  
+			data: {		
 				pinghequeslistdata: [
 					{id: 1, answerno:"answerforpinghe1", fullname: "（1）您精力充沛吗？", answer:0, is_decrease: false},
 					{id: 2, answerno:"answerforpinghe2", fullname: "（2）您容易疲乏吗？", answer:0, is_decrease: true},
@@ -834,26 +925,30 @@
 						}
 						this.result = this.result + this.resultlist2[i];
 					}
-					data_tosave["res1"] = this.resultlist1;
-					data_tosave["res2"] = this.resultlist2;
-					data_tosave["res"] = this.result;
-					console.log("data to save:");
-					console.log(data_tosave);
-					var jsonData = JSON.stringify(data_tosave);
-					console.log(jsonData);
-					var xhr = new XMLHttpRequest();
-					xhr.open("POST","/get_info",true);
-					xhr.setRequestHeader('Content-Type','application/json');
-					xhr.onreadystatechange = function(){
-						if (xhr.readyState === 4 && xhr.status === 200) {
-							var response = JSON.parse(xhr.responseText);
-							console.log(response);
-						}
-					};
-					xhr.send(jsonData);
-					console.log("上传信息完成");
-					// uploadFile();
-					// console.log("上传音频完成");
+					
+					if (audio_upload_flag==1){
+						// console.log("上传音频完成");
+						data_tosave["res1"] = this.resultlist1;
+						data_tosave["res2"] = this.resultlist2;
+						data_tosave["res"] = this.result;
+						console.log("data to save:");
+						console.log(data_tosave);
+						var jsonData = JSON.stringify(data_tosave);
+						console.log(jsonData);
+						var xhr = new XMLHttpRequest();
+						xhr.open("POST","/saveinfo",true);
+						xhr.setRequestHeader('Content-Type','application/json');
+						xhr.onreadystatechange = function(){
+							if (xhr.readyState === 4 && xhr.status === 200) {
+								var response = JSON.parse(xhr.responseText);
+								console.log(response);
+							}
+						};
+						xhr.send(jsonData);
+						console.log("上传信息完成");
+					}else{
+						console.log("先上传音频");
+					}
 				},
 			}
 		})

@@ -9,6 +9,7 @@ accounts.json
 # Distribution / packaging
 .Python
 deprecated/
+/recorded_audio/
 build/
 develop-eggs/
 dist/

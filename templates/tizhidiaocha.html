@@ -367,6 +367,14 @@
 			
 			var audio_upload_flag = -1;
 			var selectedFile = null;
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = ('0' + (now.getMonth() + 1)).slice(-2);
+			const day = ('0' + now.getDate()).slice(-2);
+			const hours = ('0' + now.getHours()).slice(-2);
+			const minutes = ('0' + now.getMinutes()).slice(-2);
+			const seconds = ('0' + now.getSeconds()).slice(-2);
+			const formattedTime = year + month + day + hours + minutes + seconds;
 			function onFileChange() {
 				console.log("选中文件");
 				selectedFile = document.getElementById("myFile").files[0];
@@ -378,14 +386,7 @@
 					alert('请选择文件');
 					return;
 				}
-				const now = new Date();
-				const year = now.getFullYear();
-				const month = ('0' + (now.getMonth() + 1)).slice(-2);
-				const day = ('0' + now.getDate()).slice(-2);
-				const hours = ('0' + now.getHours()).slice(-2);
-				const minutes = ('0' + now.getMinutes()).slice(-2);
-				const seconds = ('0' + now.getSeconds()).slice(-2);
-				const formattedTime = year + month + day + hours + minutes + seconds;
+
 				
 				const formData = new FormData();
 				formData.append('file', selectedFile);
@@ -931,6 +932,7 @@
 						data_tosave["res1"] = this.resultlist1;
 						data_tosave["res2"] = this.resultlist2;
 						data_tosave["res"] = this.result;
+						data_tosave["filename"] = formattedTime;
 						console.log("data to save:");
 						console.log(data_tosave);
 						var jsonData = JSON.stringify(data_tosave);

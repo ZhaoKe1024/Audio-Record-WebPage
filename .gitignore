@@ -10,6 +10,7 @@ accounts.json
 .Python
 deprecated/
 /recorded_audio/
+/ctmc_files/
 build/
 develop-eggs/
 dist/

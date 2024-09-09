@@ -49,8 +49,8 @@ def get_name():
 @app.route('/saveaudio', methods=['POST'])
 def save_audio():
     print("get request...")
-    print(request.files)
-    print(request.form)
+    # print(request.files)
+    # print(request.form)
     if 'file' not in request.files:
         return 'No file part in the request', 400
     file = request.files['file']
@@ -58,11 +58,11 @@ def save_audio():
     # 如果用户没有选择文件，浏览器也会提交一个空部分，没有文件名
     if file.filename == '':
         return 'No selected file', 400
-
+    ext = file.filename.split('.')[-1]
     if file:
         # file.save("./uploads/temp.m4a")
         # audio_file_path = "./uploads/temp.m4a"
-        audio_file_path = "./recorded_audio/" + request.form['filename']
+        audio_file_path = "./recorded_audio/" + request.form['filename'] + "."+ext
         print("savepath:", audio_file_path)
         file.save(audio_file_path)
         result = {

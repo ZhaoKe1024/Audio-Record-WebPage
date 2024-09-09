@@ -328,10 +328,7 @@
 				</my-component>
 			</ol>		
 			<br /><br />
-			<input type="button" id="start" value="开始录音"/><audio id="audio" controls></audio>
-			<br>
-			<progress id="progressBar" value="0" max="100"></progress>
-			<br />
+			
 			<!-- <button><input type="submit" id="submit_table" name="" onclick="uploadFile()"/></button>
 			<br /> -->
 			<div class="blank">				
@@ -367,14 +364,8 @@
 			
 			var audio_upload_flag = -1;
 			var selectedFile = null;
-			const now = new Date();
-			const year = now.getFullYear();
-			const month = ('0' + (now.getMonth() + 1)).slice(-2);
-			const day = ('0' + now.getDate()).slice(-2);
-			const hours = ('0' + now.getHours()).slice(-2);
-			const minutes = ('0' + now.getMinutes()).slice(-2);
-			const seconds = ('0' + now.getSeconds()).slice(-2);
-			const formattedTime = year + month + day + hours + minutes + seconds;
+			var uploadfilename = null;
+			
 			function onFileChange() {
 				console.log("选中文件");
 				selectedFile = document.getElementById("myFile").files[0];
@@ -387,15 +378,25 @@
 					return;
 				}
 
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = ('0' + (now.getMonth() + 1)).slice(-2);
+				const day = ('0' + now.getDate()).slice(-2);
+				const hours = ('0' + now.getHours()).slice(-2);
+				const minutes = ('0' + now.getMinutes()).slice(-2);
+				const seconds = ('0' + now.getSeconds()).slice(-2);
+				const formattedTime = year + month + day + hours + minutes + seconds;
+				uploadfilename=formattedTime;
 				
 				const formData = new FormData();
 				formData.append('file', selectedFile);
-				formData.append('filename', "audiodata_"+formattedTime+".wav");
+				formData.append('filename', "audiodata_"+uploadfilename);
 				try {
 					uploadToServer(formData);
 				} catch (error) {
 					console.error('上传失败:', error);
 					audio_upload_flag = -1;
+					alert('上传失败:'+ error);
 				}
 			}
 			function uploadToServer(formData) {
@@ -413,6 +414,7 @@
 					console.log(data);
 					audio_upload_flag = 1;
 					console.log("上传成功");
+					alert("音频上传成功");
 				})
 				.catch(error => {
 					// 处理请求失败的情况  
@@ -932,7 +934,7 @@
 						data_tosave["res1"] = this.resultlist1;
 						data_tosave["res2"] = this.resultlist2;
 						data_tosave["res"] = this.result;
-						data_tosave["filename"] = formattedTime;
+						data_tosave["filename"] = uploadfilename;
 						console.log("data to save:");
 						console.log(data_tosave);
 						var jsonData = JSON.stringify(data_tosave);
@@ -948,8 +950,10 @@
 						};
 						xhr.send(jsonData);
 						console.log("上传信息完成");
+						alert("上传信息完成！");
 					}else{
 						console.log("先上传音频");
+						alert("先上传音频！");
 					}
 				},
 			}

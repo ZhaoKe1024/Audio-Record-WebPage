@@ -46,6 +46,28 @@ def get_name():
     return file_cnt
 
 
+@app.route('/saveconsinfo', methods=['POST'])
+def print_dcit():
+    print("收到信息！")
+    try:
+        info_table = request.form
+        json_tosave = {}
+        for key in info_table:
+            print(key, '\t', info_table[key])
+            json_tosave[key] = info_table[key]
+        new_json_string = json.dumps(json_tosave, ensure_ascii=False)  # 正常显示中文
+        with open(save_dir + f"test_{info_table['filename']}.json", 'w', encoding='utf_8') as nf:
+            nf.write(new_json_string)
+        response = {'code': 0, 'message': "table form received successfully!"}
+
+        return jsonify(response=response)
+    except Exception as e:
+        print(e)
+        print("Error at request.form")
+        response = {'code': -1, 'message': "table form received failed" + str(e)}
+        return jsonify(response=response)
+
+
 @app.route('/saveaudio', methods=['POST'])
 def save_audio():
     print("get request...")
@@ -74,7 +96,7 @@ def save_audio():
         return 'Only M4A files are allowed', 400
 
 
-@app.route('/saveinfo', methods=['POST'])
+@app.route('/savectmcinfo', methods=['POST'])
 def save_info():
     print("收到信息！")
     try:

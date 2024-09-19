@@ -102,22 +102,82 @@
 	<body>
 		<div id="Box" style="position: absolute;left:23%; top:15%; width: 55%;height:60%; z-index: 999;">
 		</div>
+		<div>
+			<h1>欢迎！</h1>
+			<p>您被拜托采集以下几项数据。</p>
+			<ol>
+				<li>(1) 体质信息：1.姓名，2.年龄，3.性别，4.身高，5.体重。</li>
+				<li>(2) 生活习惯：6.是否吸烟，7.是否饮酒，8.是否患有发声系统疾病（感冒，咽炎，鼻炎等），9.新冠情况，10.最近一年是否经历过手术。</li>
+				<li>(3) 指定语音：元音字母"a"</li>
+				<li>(4) 包含67个问题的中医体质测试</li>
+			</ol>
+		</div>
+		<h1>一、体质与生活习惯</h1>
+		<div>
+			1. 姓名：<input type="text" name="fullname" id="fullname" value=""/>
+			<br /><br />
+			2. 年龄：<input type="text" name="age" id="age" value=""/>
+			<br /><br />
+			3. 性别：<input name ="gender" type ="radio" value = "1" >男&nbsp;
+				<input name ="gender" type ="radio" value = "0" >女
+			<br><br />
+			4. 身高：<input type="text" name="height" id="height" value=""/>
+			<br /><br />
+			5. 体重：<input type="text" name="weight" id="weight" value=""/>
+			<br><br />
+			<p>--生活习惯--</p>
+			6. 是否抽烟：<input name ="issmoking" type ="radio"   value = "1" >是&nbsp;
+				<input name ="issmoking" type ="radio"   value = "0" >否
+			<br><br />
+			7. 是否喝酒：<input name ="isalcohol" type ="radio"   value = "1" >是&nbsp;
+				<input name ="isalcohol" type ="radio"   value = "0" >否
+			<br><br />
+			8. 是否无法控制地咳嗽：<input name ="iscough" type ="radio"   value = "1" >是&nbsp;
+				<input name ="iscough" type ="radio"   value = "0" >否
+			<br /><br />
+
+			<p>--症状--</p>
+			9. 是否感到发烧或者肌肉疼痛？<br /> <input name ="isfever" type ="radio"   value = "1" >是&nbsp;
+				<input name ="isfever" type ="radio"   value = "0" >否
+			<br><br />
+			10. 最近一年是否经历过手术？<br /> <input name ="haveoper" type ="radio"   value = "1" >是&nbsp;
+				<input name ="haveoper" type ="radio"   value = "0" >否
+			<br><br />
+			11. 是否患有发声系统疾病？<br />
+				<input name ="isrespill" type ="radio"   value = "0" >健康&nbsp;
+				<input name ="isrespill" type ="radio"   value = "1" >感冒&nbsp;
+				<input name ="isrespill" type ="radio"   value = "2" >咽炎&nbsp;
+				<input name ="isrespill" type ="radio"   value = "3" >鼻炎
+
+			<br><br />
+			12 您的新冠情况？<br />
+				<input name ="iscovid19" type ="radio"   value = "0" >健康&nbsp;
+				<input name ="iscovid19" type ="radio"   value = "1" >COVID-19（新冠肺炎或后遗症）&nbsp;
+				<input name ="iscovid19" type ="radio"   value = "2" >有症状但未检测&nbsp
+			<br /><br /><input type="button" class="submit dynamic-button" value="提交" onclick="feath_condi_data()"/>
+		</div><br>
+		<h1>二、语音文件上传</h1>
 		<div id="app">
 			<div class="main">
 				<h1>上传录音音频文件</h1>
-				<div class="resultShow"> 结果：<p v-text="predict" style="display: inline;"></p>
+				<div class="resultShow"> <span id="audio_message">
+					请上传第 1/8 条音频：元音字母'a'
+				</span><span>____</span>结果：<p v-text="predict" style="display: inline;"></p>
 				</div>
+				
 				<div class="filebutton dynamic-button custom-file-input" onchange="onFileChange()">
 					<label for="myFile" style="display: inline-block; width: 100%; height: 100%; ">选择文件</label>
+					
 					<input type="file" id="myFile" style="width: 100%; height: 100%;display: none;">
 				</div>
+				
 				<!-- <input type="button" name="" id="" value="" /> -->
 				<input type="button" class="submit dynamic-button" value="上传" onclick="uploadFile()" />
 			</div>
 		</div>
 	<div class="container-fluid">
 		<div class="blank"></div>
-		<h4 class="totaltitle">中医体质调查问卷</h4>
+		<h1 class="totaltitle">三、中医体质调查问卷</h1>
 		<h5 class="title">请根据近一年的体验和感觉，回答以下问题：</h5>	
 		<div id="queslist">				
 			<ol class="quesitem" id="pinghequeslist" >
@@ -361,11 +421,131 @@
 <!-- 		<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="../static/js/sui.min.js"></script> -->
 		<script>
-			
-			var audio_upload_flag = -1;
-			var selectedFile = null;
 			var uploadfilename = null;
+			//-------------------------------------// 
+			//--------体征、习惯和疾病史采集---------//
+			//-------------------------------------// 
+			// const human_attris = ["fullname", "age", "height", "weight"];
+			const condi_attris = ["gender", "issmoking", "isalcohol", "iscough", "isfever", "haveoper", "isrespill", "iscovid19"];
+			const condi_desc = ["的性别", "是否具有抽烟的习惯", "是否具有喝酒的习惯", "是否具有咳嗽症状", "是否具有发烧症状", "一年内是否进行过手术", "的呼吸系统疾病情况", "的新冠情况"]
+			var audio_upload_flag = -1;
+			function feath_condi_data(filename){
+				var condiData = new FormData();
+				
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = ('0' + (now.getMonth() + 1)).slice(-2);
+				const day = ('0' + now.getDate()).slice(-2);
+				const hours = ('0' + now.getHours()).slice(-2);
+				const minutes = ('0' + now.getMinutes()).slice(-2);
+				const seconds = ('0' + now.getSeconds()).slice(-2);
+				uploadfilename=year + month + day + hours + minutes + seconds;
+				condiData.append("filename", uploadfilename+"_condition.json");
+				
+				var is_submit = true;
+				var flag = false;
+				var submit_message = "";
+				// column 1 name
+				var data_name = parseInt(document.getElementById('fullname').value);
+				if(data_name.length > 16 || data_age==''){
+					is_submit = false;
+					submit_message += "请正确输入您的姓名，长度不高于16的非空字符串。";
+				}else{
+					condiData.append("fullname", data_name);
+				}
+				// column 2 Age
+				var data_age = parseInt(document.getElementById('age').value);
+				if(data_age < 0 || data_age > 150 || data_age==''){
+					is_submit = false;
+					submit_message += "请正确输入您的年龄，0到150之间的整数值。";
+				}else{
+					condiData.append("age", data_age);
+				}
+				
+				// column 4 Height
+				var data_height = parseInt(document.getElementById('height').value);
+				if(data_height < 10 || data_height > 250 || data_height==''){
+					is_submit = false;
+					submit_message += "请正确输入您的身高，10到250之间的整数值。";
+				}else{
+					condiData.append("height", data_height);
+				}
+				// column 5 Weight
+				var data_weight = parseInt(document.getElementById('weight').value);
+				if(data_weight < 35 || data_weight > 250 || data_weight==''){
+					is_submit = false;
+					submit_message += "请正确输入您的体重，35到250之间的整数值。";
+				}else{
+					condiData.append("weight", data_weight);
+				}
+				
+				for (let j=0; j<condi_attris.length; j++) {
+					// column 3 Gender
+					var each_attri = document.getElementsByName(condi_attris[j]);
+					// console.log(genders[0].checked+"，"+genders[1].checked);
+					flag = false;
+					for(let i=0;i<each_attri.length;i++){
+						if (each_attri[i].checked == true){
+							condiData.append(condi_attris[j], each_attri[i].innerText);
+							flag = true;
+						}
+					}
+					if(!flag){
+						is_submit = false;
+						submit_message += "请选择您"+condi_desc[j];
+					}
+				}
+				
+				// 	// column 8 My[2] Weather
+				// 	var weather_item = document.getElementById('weather').value;
+				// 	formTable.append("weather", weather_item);
+				
+				// 	// column 9 My[3] AQI
+				// 	var aqi_item = parseInt(document.getElementById('aqi').value);
+				// 	if(aqi_item < 0 ){
+				// 		is_submit = 0;
+				// 		submit_message += "请正确输入空气质量AQI指数，大于0的整数值。";
+				// 	}else{
+				// 		formTable.append("aqi", aqi_item);
+				// 	}
+				// 	// column 10 My[4] humidity
+				// 	var humidity_item = parseInt(document.getElementById('humidity').value);
+				// 	if(humidity_item < 0 ){
+				// 		is_submit = 0;
+				// 		submit_message += "请正确输入空气质量AQI指数，大于0的整数值。";
+				// 	}else{
+				// 		formTable.append("humidity", humidity_item);
+				// 	}
+				
+				if (is_submit == 1){
+					// console.log(submit_message+"填写完成");
+					// var jsonData = JSON.stringify(data);
+					// formData.append("jsondata", jsonData)
+					console.log(condiData);
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST', '/saveconsinfo', true);
+					xhr.setRequestHeader('Content-Type','application/json');
+					// 不知道为啥，加上请求头就出错
+					// xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+					xhr.onreadystatechange = function() {
+						if (xhr.readyState === 4 && xhr.status === 200) {
+							var response = JSON.parse(xhr.responseText);
+							console.log(response);
+						}
+					};
+					xhr.send(condiData);
+					console.log("上传表格信息完成。")
+				}else{
+					alert("出错，请重新填写表单："+submit_message);
+				}
+			}
 			
+			//-------------------------------------// 
+			//--------------语音的采集--------------//
+			//-------------------------------------//
+			var audio_names = ["元音字母\'a\'", "元音字母\'e\'", "元音字母\'i\'", "元音字母\'o\'", "元音字母\'u\'", "mandarin", "五个四声元音字母a e i o u", "0.3s到2s的咳嗽声"];
+			var audio_cnt = 0;
+			var selectedFile = null;
 			function onFileChange() {
 				console.log("选中文件");
 				selectedFile = document.getElementById("myFile").files[0];
@@ -377,22 +557,17 @@
 					alert('请选择文件');
 					return;
 				}
-
-				const now = new Date();
-				const year = now.getFullYear();
-				const month = ('0' + (now.getMonth() + 1)).slice(-2);
-				const day = ('0' + now.getDate()).slice(-2);
-				const hours = ('0' + now.getHours()).slice(-2);
-				const minutes = ('0' + now.getMinutes()).slice(-2);
-				const seconds = ('0' + now.getSeconds()).slice(-2);
-				const formattedTime = year + month + day + hours + minutes + seconds;
-				uploadfilename=formattedTime;
-				
+				if(!uploadfilename){
+					alert('请先上传第（一）部分信息');
+					return;
+				}
 				const formData = new FormData();
 				formData.append('file', selectedFile);
-				formData.append('filename', "audiodata_"+uploadfilename);
+				formData.append('filename', uploadfilename+"_audiodata_"+audio_names[audio_cnt]);
 				try {
 					uploadToServer(formData);
+					audio_cnt += 1;
+					document.getElementById("audio_message").innerText = "请上传第 "+audio_cnt+"/8 条音频："+audio_names[audio_cnt];
 				} catch (error) {
 					console.error('上传失败:', error);
 					audio_upload_flag = -1;
@@ -422,543 +597,546 @@
 				});
 			}
 			
+			//-------------------------------------// 
+			//--------中医体质填写与计算采集---------//
+			//-------------------------------------// 
 			var data_tosave = {};
-		new Vue({
-			el: '#queslist',
-			data: {		
-				pinghequeslistdata: [
-					{id: 1, answerno:"answerforpinghe1", fullname: "（1）您精力充沛吗？", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerforpinghe2", fullname: "（2）您容易疲乏吗？", answer:0, is_decrease: true},
-					{id: 3, answerno:"answerforpinghe3", fullname: "（3）您说话声音低弱无力吗？", answer:0, is_decrease: true},
-					{id: 4, answerno:"answerforpinghe4", fullname: "（4）您感到闷闷不乐，情绪低沉吗？", answer:0, is_decrease: true},
-					{id: 5, answerno:"answerforpinghe5", fullname: "（5）您比一般人耐受不了寒冷（冬天的寒冷，夏天的空调，电扇等）吗？", answer:0, is_decrease: true},
-					{id: 6, answerno:"answerforpinghe6", fullname: "（6）您能适应外界自然和社会环境的变化吗？", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerforpinghe7", fullname: "（7）您容易失眠吗？", answer:0, is_decrease: true},
-					{id: 8, answerno:"answerforpinghe8", fullname: "（8）您容易忘事（健忘）吗？", answer:0, is_decrease: true},
-				],
+			new Vue({
+				el: '#queslist',
+				data: {		
+					pinghequeslistdata: [
+						{id: 1, answerno:"answerforpinghe1", fullname: "（1）您精力充沛吗？", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerforpinghe2", fullname: "（2）您容易疲乏吗？", answer:0, is_decrease: true},
+						{id: 3, answerno:"answerforpinghe3", fullname: "（3）您说话声音低弱无力吗？", answer:0, is_decrease: true},
+						{id: 4, answerno:"answerforpinghe4", fullname: "（4）您感到闷闷不乐，情绪低沉吗？", answer:0, is_decrease: true},
+						{id: 5, answerno:"answerforpinghe5", fullname: "（5）您比一般人耐受不了寒冷（冬天的寒冷，夏天的空调，电扇等）吗？", answer:0, is_decrease: true},
+						{id: 6, answerno:"answerforpinghe6", fullname: "（6）您能适应外界自然和社会环境的变化吗？", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerforpinghe7", fullname: "（7）您容易失眠吗？", answer:0, is_decrease: true},
+						{id: 8, answerno:"answerforpinghe8", fullname: "（8）您容易忘事（健忘）吗？", answer:0, is_decrease: true},
+					],
 
-				qixuqueslistdata: [
-					{id: 1, answerno:"answerforqixu1", fullname: "（9）您容易疲乏吗？", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerforqixu2", fullname: "（10）您容易气短(呼吸短促，接不上气)吗？", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerforqixu3", fullname: "（11）您容易心慌吗？", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerforqixu4", fullname: "（12）您容易头晕或站起时晕眩吗？", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerforqixu5", fullname: "（13）您比别人容易患感冒吗?", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerforqixu6", fullname: "（14）您喜欢安静、懒得说话吗?", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerforqixu7", fullname: "（15）您说话声音低弱无力吗?", answer:0, is_decrease: false},
-					{id: 8, answerno:"answerforqixu8", fullname: "（16）您活动量稍大就容易出虚汗吗?", answer:0, is_decrease: false},
-				],
-				
-				yangxuqueslistdata: [
-					{id: 1, answerno:"answerforyangxu1", fullname: "（17）您手脚发凉吗?", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerforyangxu2", fullname: "（18）您胃脘部、背部或腰膝部怕冷吗？", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerforyangxu3", fullname: "（19）您感到怕冷、衣服比别人穿得多吗?", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerforyangxu4", fullname: "（20）您比一般人耐受不了寒冷(冬天的寒冷，夏天的冷空调、电扇等)吗？", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerforyangxu5", fullname: "（21）您比别人容易患感冒吗?", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerforyangxu6", fullname: "（22）您吃(喝)凉的东西会感到不舒服或者怕吃(喝)凉的东西吗？", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerforyangxu7", fullname: "（23）您受凉或吃(喝)凉的东西后，容易腹泻(拉肚子)吗?", answer:0, is_decrease: false},
-				],
-				
-				yinxuqueslistdata: [
-					{id: 1, answerno:"answerforyinxu1", fullname: "（24）您感到手脚心发热吗?", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerforyinxu2", fullname: "（25）您感觉身体、脸上发热吗？", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerforyinxu3", fullname: "（26）您皮肤或口唇干吗?", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerforyinxu4", fullname: "（27）您口唇的颜色比一般人红吗?", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerforyinxu5", fullname: "（28）您容易便秘或大便干燥吗?", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerforyinxu6", fullname: "（29）您面部两颧潮红或偏红吗?", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerforyinxu7", fullname: "（30）您感到眼睛干涩吗？", answer:0, is_decrease: false},
-					{id: 8, answerno:"answerforyinxu8", fullname: "（31）您感到口干咽燥、总想喝水吗？", answer:0, is_decrease: false},
-				],								
-												
-				tanxuqueslistdata: [
-					{id: 1, answerno:"answerfortanxu1", fullname: "（32）您感到胸闷或腹部胀满吗？", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerfortanxu2", fullname: "（33）您感到身体沉重不轻松或不爽快吗?", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerfortanxu3", fullname: "（34）您腹部肥满松软吗?", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerfortanxu4", fullname: "（35）您有额部油脂分泌多的现象吗?", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerfortanxu5", fullname: "（36）您上眼睑比别人肿（上眼睑有轻微隆起的现象）吗?", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerfortanxu6", fullname: "（37）您嘴里有黏黏的感觉吗?", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerfortanxu7", fullname: "（38）您平时痰多，特别是咽喉部总感到有痰堵着吗?", answer:0, is_decrease: false},
-					{id: 8, answerno:"answerfortanxu8", fullname: "（39）您舌苔厚腻或有舌苔厚厚的感觉吗?", answer:0, is_decrease: false},
-				],
-																
-				shirequeslistdata: [
-					{id: 1, answerno:"answerforshire1", fullname: "（40）您面部或鼻部有油腻感或者油亮发光吗?", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerforshire2", fullname: "（41）您易生痤疮或疮疖吗?", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerforshire3", fullname: "（42）您感到口苦或嘴里有异味吗?", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerforshire4", fullname: "（43）您大便黏滞不爽、有解不尽的感觉吗?", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerforshire5", fullname: "（44）您小便时尿道有发热感、尿色浓(深)吗？", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerforshire6", fullname: "（45）您带下色黄(白带颜色发黄)吗?（限女性回答）", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerforshire7", fullname: "（46）您的阴囊部位潮湿吗?（限男性回答）", answer:0, is_decrease: false},
-				],
-																				
-				xueyuqueslistdata: [
-					{id: 1, answerno:"answerforxueyu1", fullname: "（47）您的皮肤在不知不觉中会出现青紫瘀斑(皮下出血)吗?", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerforxueyu2", fullname: "（48）您两颧部有细微红丝吗?", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerforxueyu3", fullname: "（49）您身体上有哪里疼痛吗？", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerforxueyu4", fullname: "（50）您面色晦黯、或容易出现褐斑吗?", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerforxueyu5", fullname: "（51）您容易有黑眼圈吗?", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerforxueyu6", fullname: "（52）您容易忘事（健忘）吗？", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerforxueyu7", fullname: "（53）您口唇颜色偏黯吗?", answer:0, is_decrease: false},
-				],
+					qixuqueslistdata: [
+						{id: 1, answerno:"answerforqixu1", fullname: "（9）您容易疲乏吗？", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerforqixu2", fullname: "（10）您容易气短(呼吸短促，接不上气)吗？", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerforqixu3", fullname: "（11）您容易心慌吗？", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerforqixu4", fullname: "（12）您容易头晕或站起时晕眩吗？", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerforqixu5", fullname: "（13）您比别人容易患感冒吗?", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerforqixu6", fullname: "（14）您喜欢安静、懒得说话吗?", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerforqixu7", fullname: "（15）您说话声音低弱无力吗?", answer:0, is_decrease: false},
+						{id: 8, answerno:"answerforqixu8", fullname: "（16）您活动量稍大就容易出虚汗吗?", answer:0, is_decrease: false},
+					],
+					
+					yangxuqueslistdata: [
+						{id: 1, answerno:"answerforyangxu1", fullname: "（17）您手脚发凉吗?", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerforyangxu2", fullname: "（18）您胃脘部、背部或腰膝部怕冷吗？", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerforyangxu3", fullname: "（19）您感到怕冷、衣服比别人穿得多吗?", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerforyangxu4", fullname: "（20）您比一般人耐受不了寒冷(冬天的寒冷，夏天的冷空调、电扇等)吗？", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerforyangxu5", fullname: "（21）您比别人容易患感冒吗?", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerforyangxu6", fullname: "（22）您吃(喝)凉的东西会感到不舒服或者怕吃(喝)凉的东西吗？", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerforyangxu7", fullname: "（23）您受凉或吃(喝)凉的东西后，容易腹泻(拉肚子)吗?", answer:0, is_decrease: false},
+					],
+					
+					yinxuqueslistdata: [
+						{id: 1, answerno:"answerforyinxu1", fullname: "（24）您感到手脚心发热吗?", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerforyinxu2", fullname: "（25）您感觉身体、脸上发热吗？", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerforyinxu3", fullname: "（26）您皮肤或口唇干吗?", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerforyinxu4", fullname: "（27）您口唇的颜色比一般人红吗?", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerforyinxu5", fullname: "（28）您容易便秘或大便干燥吗?", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerforyinxu6", fullname: "（29）您面部两颧潮红或偏红吗?", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerforyinxu7", fullname: "（30）您感到眼睛干涩吗？", answer:0, is_decrease: false},
+						{id: 8, answerno:"answerforyinxu8", fullname: "（31）您感到口干咽燥、总想喝水吗？", answer:0, is_decrease: false},
+					],								
+													
+					tanxuqueslistdata: [
+						{id: 1, answerno:"answerfortanxu1", fullname: "（32）您感到胸闷或腹部胀满吗？", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerfortanxu2", fullname: "（33）您感到身体沉重不轻松或不爽快吗?", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerfortanxu3", fullname: "（34）您腹部肥满松软吗?", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerfortanxu4", fullname: "（35）您有额部油脂分泌多的现象吗?", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerfortanxu5", fullname: "（36）您上眼睑比别人肿（上眼睑有轻微隆起的现象）吗?", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerfortanxu6", fullname: "（37）您嘴里有黏黏的感觉吗?", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerfortanxu7", fullname: "（38）您平时痰多，特别是咽喉部总感到有痰堵着吗?", answer:0, is_decrease: false},
+						{id: 8, answerno:"answerfortanxu8", fullname: "（39）您舌苔厚腻或有舌苔厚厚的感觉吗?", answer:0, is_decrease: false},
+					],
+																	
+					shirequeslistdata: [
+						{id: 1, answerno:"answerforshire1", fullname: "（40）您面部或鼻部有油腻感或者油亮发光吗?", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerforshire2", fullname: "（41）您易生痤疮或疮疖吗?", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerforshire3", fullname: "（42）您感到口苦或嘴里有异味吗?", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerforshire4", fullname: "（43）您大便黏滞不爽、有解不尽的感觉吗?", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerforshire5", fullname: "（44）您小便时尿道有发热感、尿色浓(深)吗？", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerforshire6", fullname: "（45）您带下色黄(白带颜色发黄)吗?（限女性回答）", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerforshire7", fullname: "（46）您的阴囊部位潮湿吗?（限男性回答）", answer:0, is_decrease: false},
+					],
+																					
+					xueyuqueslistdata: [
+						{id: 1, answerno:"answerforxueyu1", fullname: "（47）您的皮肤在不知不觉中会出现青紫瘀斑(皮下出血)吗?", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerforxueyu2", fullname: "（48）您两颧部有细微红丝吗?", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerforxueyu3", fullname: "（49）您身体上有哪里疼痛吗？", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerforxueyu4", fullname: "（50）您面色晦黯、或容易出现褐斑吗?", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerforxueyu5", fullname: "（51）您容易有黑眼圈吗?", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerforxueyu6", fullname: "（52）您容易忘事（健忘）吗？", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerforxueyu7", fullname: "（53）您口唇颜色偏黯吗?", answer:0, is_decrease: false},
+					],
 
-				qiyuqueslistdata: [
-					{id: 1, answerno:"answerforqiyu1", fullname: "（54）您感到闷闷不乐、情绪低沉吗?", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerforqiyu2", fullname: "（55）您容易精神紧张、焦虑不安吗?", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerforqiyu3", fullname: "（56）您多愁善感、感情脆弱吗？", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerforqiyu4", fullname: "（57）您容易感到害怕或受到惊吓吗?", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerforqiyu5", fullname: "（58）您胁肋部或乳房胀痛吗?", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerforqiyu6", fullname: "（59）您无缘无故叹气吗?", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerforqiyu7", fullname: "（60）您咽喉部有异物感，且吐之不出、咽之不下吗？", answer:0, is_decrease: false},
-				],
-				
-				tebingqueslistdata: [
-					{id: 1, answerno:"answerfortebing1", fullname: "（61）您没有感冒时也会打喷嚏吗？", answer:0, is_decrease: false},
-					{id: 2, answerno:"answerfortebing2", fullname: "（62）您没有感冒时也会鼻塞、流鼻涕吗?", answer:0, is_decrease: false},
-					{id: 3, answerno:"answerfortebing3", fullname: "（63）您有因季节变化、温度变化或异味等原因而咳喘的现象吗？", answer:0, is_decrease: false},
-					{id: 4, answerno:"answerfortebing4", fullname: "（64）您容易过敏(对药物、食物、气味、花粉或在季节交替、气候变化时)吗?", answer:0, is_decrease: false},
-					{id: 5, answerno:"answerfortebing5", fullname: "（65）您的皮肤容易起荨麻疹(风团、风疹块、风疙瘩)吗?", answer:0, is_decrease: false},
-					{id: 6, answerno:"answerfortebing6", fullname: "（66）您的皮肤因过敏出现过紫癜(紫红色瘀点、瘀斑)吗?", answer:0, is_decrease: false},
-					{id: 7, answerno:"answerfortebing7", fullname: "（67）您的皮肤一抓就红，并出现抓痕吗? ", answer:0, is_decrease: false},
-				],		
-																										
-				Ascorelistdata:[0,0,0,0,0,0,0,0],
-				Ascore: 0,
-				Bscorelistdata:[0,0,0,0,0,0,0,0],
-				Bscore: 0,
-				Cscorelistdata:[0,0,0,0,0,0,0],				
-				Cscore: 0,
-				Dscorelistdata:[0,0,0,0,0,0,0,0],				
-				Dscore: 0,
-				Escorelistdata:[0,0,0,0,0,0,0,0],				
-				Escore: 0,
-				Fscorelistdata:[0,0,0,0,0,0,0],				
-				Fscore: 0,
-				Gscorelistdata:[0,0,0,0,0,0,0],				
-				Gscore: 0,
-				Hscorelistdata:[0,0,0,0,0,0,0],				
-				Hscore: 0,
-				Iscorelistdata:[0,0,0,0,0,0,0],				
-				Iscore: 0,		
-				resultlist1: [],
-				resultlist2: [],
-				result: ""
-			},
-			methods: {
-				pingheresult: function(){
-					var pinghequeslist = document.getElementById("pinghequeslist");
-					var li_list = pinghequeslist.getElementsByTagName("li");
-					console.log(li_list);
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						//var quesname = li_list[i].childNodes[0].innerText;
-						//console.log(quesname);
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}
-						}
-						if(parseInt(answervalue) == 0){
-							this.Ascorelistdata[i] = 1;
-						}else{
-							if(this.pinghequeslistdata[i].is_decrease == true){
-								this.Ascorelistdata[i] = 6 - parseInt(answervalue);
-							}else{
-								this.Ascorelistdata[i] = parseInt(answervalue);
-							}								
-						}
-						totalscore = totalscore + this.Ascorelistdata[i];
-					}
-					console.log(this.Ascorelistdata);
-					this.Ascore = [(totalscore - len)/(len*4)]*100;
-					this.Ascore = this.Ascore.toFixed(1);
-					console.log("pinghe score = " + this.Ascore);
-					data_tosave["pinghe"] = {"answer_list": this.Ascorelistdata, "total_score": totalscore, "score": this.Ascore};
+					qiyuqueslistdata: [
+						{id: 1, answerno:"answerforqiyu1", fullname: "（54）您感到闷闷不乐、情绪低沉吗?", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerforqiyu2", fullname: "（55）您容易精神紧张、焦虑不安吗?", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerforqiyu3", fullname: "（56）您多愁善感、感情脆弱吗？", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerforqiyu4", fullname: "（57）您容易感到害怕或受到惊吓吗?", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerforqiyu5", fullname: "（58）您胁肋部或乳房胀痛吗?", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerforqiyu6", fullname: "（59）您无缘无故叹气吗?", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerforqiyu7", fullname: "（60）您咽喉部有异物感，且吐之不出、咽之不下吗？", answer:0, is_decrease: false},
+					],
+					
+					tebingqueslistdata: [
+						{id: 1, answerno:"answerfortebing1", fullname: "（61）您没有感冒时也会打喷嚏吗？", answer:0, is_decrease: false},
+						{id: 2, answerno:"answerfortebing2", fullname: "（62）您没有感冒时也会鼻塞、流鼻涕吗?", answer:0, is_decrease: false},
+						{id: 3, answerno:"answerfortebing3", fullname: "（63）您有因季节变化、温度变化或异味等原因而咳喘的现象吗？", answer:0, is_decrease: false},
+						{id: 4, answerno:"answerfortebing4", fullname: "（64）您容易过敏(对药物、食物、气味、花粉或在季节交替、气候变化时)吗?", answer:0, is_decrease: false},
+						{id: 5, answerno:"answerfortebing5", fullname: "（65）您的皮肤容易起荨麻疹(风团、风疹块、风疙瘩)吗?", answer:0, is_decrease: false},
+						{id: 6, answerno:"answerfortebing6", fullname: "（66）您的皮肤因过敏出现过紫癜(紫红色瘀点、瘀斑)吗?", answer:0, is_decrease: false},
+						{id: 7, answerno:"answerfortebing7", fullname: "（67）您的皮肤一抓就红，并出现抓痕吗? ", answer:0, is_decrease: false},
+					],		
+																											
+					Ascorelistdata:[0,0,0,0,0,0,0,0],
+					Ascore: 0,
+					Bscorelistdata:[0,0,0,0,0,0,0,0],
+					Bscore: 0,
+					Cscorelistdata:[0,0,0,0,0,0,0],				
+					Cscore: 0,
+					Dscorelistdata:[0,0,0,0,0,0,0,0],				
+					Dscore: 0,
+					Escorelistdata:[0,0,0,0,0,0,0,0],				
+					Escore: 0,
+					Fscorelistdata:[0,0,0,0,0,0,0],				
+					Fscore: 0,
+					Gscorelistdata:[0,0,0,0,0,0,0],				
+					Gscore: 0,
+					Hscorelistdata:[0,0,0,0,0,0,0],				
+					Hscore: 0,
+					Iscorelistdata:[0,0,0,0,0,0,0],				
+					Iscore: 0,		
+					resultlist1: [],
+					resultlist2: [],
+					result: ""
 				},
-
-				qixuresult: function(){
-					var qixuqueslist = document.getElementById("qixuqueslist");
-					var li_list = qixuqueslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
-						}
-						if(parseInt(answervalue) == 0){
-							this.Bscorelistdata[i] = 1;
-						}else{
-							if(this.qixuqueslistdata[i].is_decrease == true){
-								this.Bscorelistdata[i] = 6 - parseInt(answervalue);
-							}else{
-								this.Bscorelistdata[i] = parseInt(answervalue);
-							}	
-						}
-
-						totalscore = totalscore + this.Bscorelistdata[i];					
-					}
-					console.log(this.Bscorelistdata);
-					this.Bscore = [(totalscore - len)/(len*4)]*100;
-					this.Bscore = this.Bscore.toFixed(1);
-					console.log("qixu score = " + this.Bscore);	
-					data_tosave["qixu"] = {"answer_list": this.Bscorelistdata, "total_score": totalscore, "score": this.Bscore};				
-				},		
-				
-				yangxuresult: function(){
-					var yangxuqueslist = document.getElementById("yangxuqueslist");
-					var li_list = yangxuqueslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
-						}
-						if(parseInt(answervalue) == 0){
-							this.Cscorelistdata[i] = 1;
-						}else{
-							if(this.yangxuqueslistdata[i].is_decrease == true){
-								this.Cscorelistdata[i] = 6 - parseInt(answervalue);
-							}else{
-								this.Cscorelistdata[i] = parseInt(answervalue);
+				methods: {
+					pingheresult: function(){
+						var pinghequeslist = document.getElementById("pinghequeslist");
+						var li_list = pinghequeslist.getElementsByTagName("li");
+						console.log(li_list);
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							//var quesname = li_list[i].childNodes[0].innerText;
+							//console.log(quesname);
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}
 							}
-						}
-	
-						totalscore = totalscore + this.Cscorelistdata[i];					
-					}
-					console.log(this.Cscorelistdata);
-					this.Cscore = [(totalscore - len)/(len*4)]*100;
-					this.Cscore = this.Cscore.toFixed(1);
-					console.log("yangxu score = " + this.Cscore);	
-					data_tosave["yangxu"] = {"answer_list": this.Cscorelistdata, "total_score": totalscore, "score": this.Cscore};
-				},	
-	
-				yinxuresult: function(){
-					var yinxuqueslist = document.getElementById("yinxuqueslist");
-					var li_list = yinxuqueslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
-						}
-						if(parseInt(answervalue) == 0){
-							this.Dscorelistdata[i] = 1;
-						}else{
-							if(this.yinxuqueslistdata[i].is_decrease == true){
-								this.Dscorelistdata[i] = 6 - parseInt(answervalue);
+							if(parseInt(answervalue) == 0){
+								this.Ascorelistdata[i] = 1;
 							}else{
-								this.Dscorelistdata[i] = parseInt(answervalue);
+								if(this.pinghequeslistdata[i].is_decrease == true){
+									this.Ascorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Ascorelistdata[i] = parseInt(answervalue);
+								}								
 							}
+							totalscore = totalscore + this.Ascorelistdata[i];
 						}
-							
-						totalscore = totalscore + this.Dscorelistdata[i];					
-					}
-					console.log(this.Dscorelistdata);
-					this.Dscore = [(totalscore - len)/(len*4)]*100;
-					this.Dscore = this.Dscore.toFixed(1);
-					console.log("yinxu score = " + this.Dscore);
-					data_tosave["yinxu"] = {"answer_list": this.Dscorelistdata, "total_score": totalscore, "score": this.Dscore};
-				},		
-	
-				tanxuresult: function(){
-					var tanxuqueslist = document.getElementById("tanxuqueslist");
-					var li_list = tanxuqueslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
-						}
-						if(parseInt(answervalue) == 0){
-							this.Escorelistdata[i] = 1;
-						}else{
-							if(this.tanxuqueslistdata[i].is_decrease == true){
-								this.Escorelistdata[i] = 6 - parseInt(answervalue);
-							}else{
-								this.Escorelistdata[i] = parseInt(answervalue);
-							}
-						}
-							
-						totalscore = totalscore + this.Escorelistdata[i];					
-					}
-					console.log(this.Escorelistdata);
-					this.Escore = [(totalscore - len)/(len*4)]*100;
-					this.Escore = this.Escore.toFixed(1);
-					console.log("tanxu score = " + this.Escore);
-					data_tosave["tanshi"] = {"answer_list": this.Escorelistdata, "total_score": totalscore, "score": this.Escore};
-				},	
+						console.log(this.Ascorelistdata);
+						this.Ascore = [(totalscore - len)/(len*4)]*100;
+						this.Ascore = this.Ascore.toFixed(1);
+						console.log("pinghe score = " + this.Ascore);
+						data_tosave["pinghe"] = {"answer_list": this.Ascorelistdata, "total_score": totalscore, "score": this.Ascore};
+					},
 
-				shireresult: function(){
-					var shirequeslist = document.getElementById("shirequeslist");
-					var li_list = shirequeslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
-						}
-						if(parseInt(answervalue) == 0){
-							this.Fscorelistdata[i] = 1;
-						}else{
-							if(this.shirequeslistdata[i].is_decrease == true){
-								this.Fscorelistdata[i] = 6 - parseInt(answervalue);
-							}else{
-								this.Fscorelistdata[i] = parseInt(answervalue);
-							}								
-						}
-						totalscore = totalscore + this.Fscorelistdata[i];					
-					}
-					console.log(this.Fscorelistdata);
-					len = len-1;
-					totalscore = totalscore -1;
-					this.Fscore = [(totalscore - len)/(len*4)]*100;
-					this.Fscore = this.Fscore.toFixed(1);
-					console.log("shire score = " + this.Fscore);
-					data_tosave["shire"] = {"answer_list": this.Fscorelistdata, "total_score": totalscore, "score": this.Fscore};
-				},	
-	
-				xueyuresult: function(){
-					var xueyuqueslist = document.getElementById("xueyuqueslist");
-					var li_list = xueyuqueslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
-						}
-						if(parseInt(answervalue) == 0){
-							this.Gscorelistdata[i] = 1;
-						}
-						else{
-							if(this.xueyuqueslistdata[i].is_decrease == true){
-								this.Gscorelistdata[i] = 6 - parseInt(answervalue);
-							}else{
-								this.Gscorelistdata[i] = parseInt(answervalue);
+					qixuresult: function(){
+						var qixuqueslist = document.getElementById("qixuqueslist");
+						var li_list = qixuqueslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
 							}
-						}
-							
-						totalscore = totalscore + this.Gscorelistdata[i];					
-					}
-					console.log(this.Gscorelistdata);
-					this.Gscore = [(totalscore - len)/(len*4)]*100;
-					this.Gscore = this.Gscore.toFixed(1);
-					console.log("xuexu score = " + this.Gscore);
-					data_tosave["xueyu"] = {"answer_list": this.Gscorelistdata, "total_score": totalscore, "score": this.Gscore};
-				},	
-
-				qiyuresult: function(){
-					var qiyuqueslist = document.getElementById("qiyuqueslist");
-					var li_list = qiyuqueslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
-						}
-						if(parseInt(answervalue) == 0){
-							this.Hscorelistdata[i] = 1;
-						}else{
-							if(this.qiyuqueslistdata[i].is_decrease == true){
-								this.Hscorelistdata[i] = 6 - parseInt(answervalue);
+							if(parseInt(answervalue) == 0){
+								this.Bscorelistdata[i] = 1;
 							}else{
-								this.Hscorelistdata[i] = parseInt(answervalue);
+								if(this.qixuqueslistdata[i].is_decrease == true){
+									this.Bscorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Bscorelistdata[i] = parseInt(answervalue);
+								}	
 							}
-						}
-							
-						totalscore = totalscore + this.Hscorelistdata[i];					
-					}
-					console.log(this.Hscorelistdata);
-					this.Hscore = [(totalscore - len)/(len*4)]*100;
-					this.Hscore = this.Hscore.toFixed(1);
-					console.log("qiyu score = " + this.Hscore);
-					data_tosave["qiyu"] = {"answer_list": this.Hscorelistdata, "total_score": totalscore, "score": this.Hscore};
-				},	
 
-				tebingresult: function(){
-					var tebingqueslist = document.getElementById("tebingqueslist");
-					var li_list = tebingqueslist.getElementsByTagName("li");
-					var totalscore = 0;
-					var len = li_list.length;
-					for( var i = 0; i < len; i ++ ){
-						var answervalue = 0;
-						for(var j = 0; j < 5; j++ ){
-							var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
-							if(tmp.checked == true){
-								answervalue = tmp.value;	
-							}												
+							totalscore = totalscore + this.Bscorelistdata[i];					
 						}
-						if(parseInt(answervalue) == 0){
-							this.Iscorelistdata[i] = 1;
-						}else{
-							if(this.tebingqueslistdata[i].is_decrease == true){
-								this.Iscorelistdata[i] = 6 - parseInt(answervalue);
-							}else{
-								this.Iscorelistdata[i] = parseInt(answervalue);
-							}
-						}
-							
-						totalscore = totalscore + this.Iscorelistdata[i];					
-					}
-					console.log(this.Iscorelistdata);
-					this.Iscore = [(totalscore - len)/(len*4)]*100;
-					this.Iscore = this.Iscore.toFixed(1);
-					console.log("tebing score = " + this.Iscore);
-					data_tosave["tebing"] = {"answer_list": this.Iscorelistdata, "total_score": totalscore, "score": this.Iscore};
-				},
-
-				compute: function (event) {
+						console.log(this.Bscorelistdata);
+						this.Bscore = [(totalscore - len)/(len*4)]*100;
+						this.Bscore = this.Bscore.toFixed(1);
+						console.log("qixu score = " + this.Bscore);	
+						data_tosave["qixu"] = {"answer_list": this.Bscorelistdata, "total_score": totalscore, "score": this.Bscore};				
+					},		
 					
-					this.pingheresult();
-					this.qixuresult();
-					this.yangxuresult();
-					this.yinxuresult();
-					this.tanxuresult();
-					this.shireresult();
-					this.xueyuresult();
-					this.qiyuresult();
-					this.tebingresult();
-					
-				   /*
-					this.Ascore = 20;
-					this.Bscore = 0;
-					this.Cscore = 30;
-					this.Dscore = 20;
-					this.Escore = 30;
-					this.Fscore = 0;
-					this.Gscore = 0;
-					this.Hscore = 0;
-					this.Iscore = 0;
-				   */
-					if(this.Bscore >= 40){
-						this.resultlist1.push("气虚质");
-					}else if((this.Bscore < 40)&&(this.Bscore >= 30)){
-						this.resultlist2.push("有气虚倾向");
-					}										
-					if(this.Cscore >= 40){
-						this.resultlist1.push("阳虚质");
-					}else if((this.Cscore < 40)&&(this.Cscore >= 30)){
-						this.resultlist2.push("有阳虚倾向");
-					}
-					if(this.Dscore >= 40){
-						this.resultlist1.push("阴虚质");
-					}else if((this.Dscore < 40)&&(this.Dscore >= 30)){
-						this.resultlist2.push("有阴虚倾向");
-					}
-					if(this.Escore >= 40){
-						this.resultlist1.push("痰湿质");
-					}else if((this.Escore < 40)&&(this.Escore >= 30)){
-						this.resultlist2.push("有痰湿倾向");
-					}
-					if(this.Fscore >= 40){
-						this.resultlist1.push("湿热质");
-					}else if((this.Fscore < 40)&&(this.Fscore >= 30)){
-						this.resultlist2.push("有湿热倾向");
-					}
-					if(this.Gscore >= 40){
-						this.resultlist1.push("血瘀质");
-					}else if((this.Gscore < 40)&&(this.Gscore >= 30)){
-						this.resultlist2.push("有血瘀倾向");
-					}		
-					if(this.Hscore >= 40){
-						this.resultlist1.push("气郁质");
-					}else if((this.Hscore < 40)&&(this.Hscore >= 30)){
-						this.resultlist2.push("有气郁倾向");
-					}	
-					if(this.Iscore >= 40){
-						this.resultlist1.push("特禀质");
-					}else if((this.Iscore < 40)&&(this.Iscore >= 30)){
-						this.resultlist2.push("有特禀倾向");
-					}		
-					
-					console.log(this.resultlist1);
-					console.log(this.resultlist2);
-					
-					if(this.resultlist1.length > 0){
-						for(var i = 0; i < this.resultlist1.length -1 ; i++){
-							this.result = this.result + this.resultlist1[i] + "，";
-						}
-						this.result = this.result + this.resultlist1[i];
-					}
-					else if((this.resultlist1.length == 0)&&(this.Ascore >= 60)&&(this.resultlist2.length == 0)){
-						this.result = "平和质"
-					}
-					else if((this.resultlist1.length == 0)&&(this.Ascore >= 60)&&(this.resultlist2.length > 0)){
-						this.result = "基本是平和质，"
-						for(var i = 0; i < this.resultlist2.length-1; i++){
-							this.result = this.result + this.resultlist2[i] + "，";
-						}
-						this.result = this.result + this.resultlist2[i];
-					}
-					else if((this.resultlist1.length == 0)&&(this.Ascore < 60)&&(this.resultlist2.length == 0)){
-						this.result = "非平和质"
-					}
-					else if((this.resultlist1.length == 0)&&(this.Ascore < 60)&&(this.resultlist2.length > 0)){
-						this.result = "非平和质，"
-						for(var i = 0; i < this.resultlist2.length - 1; i++){
-							this.result = this.result + this.resultlist2[i] + "，";
-						}
-						this.result = this.result + this.resultlist2[i];
-					}
-					
-					if (audio_upload_flag==1){
-						// console.log("上传音频完成");
-						data_tosave["res1"] = this.resultlist1;
-						data_tosave["res2"] = this.resultlist2;
-						data_tosave["res"] = this.result;
-						data_tosave["filename"] = uploadfilename;
-						console.log("data to save:");
-						console.log(data_tosave);
-						var jsonData = JSON.stringify(data_tosave);
-						console.log(jsonData);
-						var xhr = new XMLHttpRequest();
-						xhr.open("POST","/saveinfo",true);
-						xhr.setRequestHeader('Content-Type','application/json');
-						xhr.onreadystatechange = function(){
-							if (xhr.readyState === 4 && xhr.status === 200) {
-								var response = JSON.parse(xhr.responseText);
-								console.log(response);
+					yangxuresult: function(){
+						var yangxuqueslist = document.getElementById("yangxuqueslist");
+						var li_list = yangxuqueslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
 							}
-						};
-						xhr.send(jsonData);
-						console.log("上传信息完成");
-						alert("上传信息完成！");
-					}else{
-						console.log("先上传音频");
-						alert("先上传音频！");
-					}
-				},
-			}
-		})
+							if(parseInt(answervalue) == 0){
+								this.Cscorelistdata[i] = 1;
+							}else{
+								if(this.yangxuqueslistdata[i].is_decrease == true){
+									this.Cscorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Cscorelistdata[i] = parseInt(answervalue);
+								}
+							}
 		
+							totalscore = totalscore + this.Cscorelistdata[i];					
+						}
+						console.log(this.Cscorelistdata);
+						this.Cscore = [(totalscore - len)/(len*4)]*100;
+						this.Cscore = this.Cscore.toFixed(1);
+						console.log("yangxu score = " + this.Cscore);	
+						data_tosave["yangxu"] = {"answer_list": this.Cscorelistdata, "total_score": totalscore, "score": this.Cscore};
+					},	
+		
+					yinxuresult: function(){
+						var yinxuqueslist = document.getElementById("yinxuqueslist");
+						var li_list = yinxuqueslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
+							}
+							if(parseInt(answervalue) == 0){
+								this.Dscorelistdata[i] = 1;
+							}else{
+								if(this.yinxuqueslistdata[i].is_decrease == true){
+									this.Dscorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Dscorelistdata[i] = parseInt(answervalue);
+								}
+							}
+								
+							totalscore = totalscore + this.Dscorelistdata[i];					
+						}
+						console.log(this.Dscorelistdata);
+						this.Dscore = [(totalscore - len)/(len*4)]*100;
+						this.Dscore = this.Dscore.toFixed(1);
+						console.log("yinxu score = " + this.Dscore);
+						data_tosave["yinxu"] = {"answer_list": this.Dscorelistdata, "total_score": totalscore, "score": this.Dscore};
+					},		
+		
+					tanxuresult: function(){
+						var tanxuqueslist = document.getElementById("tanxuqueslist");
+						var li_list = tanxuqueslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
+							}
+							if(parseInt(answervalue) == 0){
+								this.Escorelistdata[i] = 1;
+							}else{
+								if(this.tanxuqueslistdata[i].is_decrease == true){
+									this.Escorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Escorelistdata[i] = parseInt(answervalue);
+								}
+							}
+								
+							totalscore = totalscore + this.Escorelistdata[i];					
+						}
+						console.log(this.Escorelistdata);
+						this.Escore = [(totalscore - len)/(len*4)]*100;
+						this.Escore = this.Escore.toFixed(1);
+						console.log("tanxu score = " + this.Escore);
+						data_tosave["tanshi"] = {"answer_list": this.Escorelistdata, "total_score": totalscore, "score": this.Escore};
+					},	
+
+					shireresult: function(){
+						var shirequeslist = document.getElementById("shirequeslist");
+						var li_list = shirequeslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
+							}
+							if(parseInt(answervalue) == 0){
+								this.Fscorelistdata[i] = 1;
+							}else{
+								if(this.shirequeslistdata[i].is_decrease == true){
+									this.Fscorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Fscorelistdata[i] = parseInt(answervalue);
+								}								
+							}
+							totalscore = totalscore + this.Fscorelistdata[i];					
+						}
+						console.log(this.Fscorelistdata);
+						len = len-1;
+						totalscore = totalscore -1;
+						this.Fscore = [(totalscore - len)/(len*4)]*100;
+						this.Fscore = this.Fscore.toFixed(1);
+						console.log("shire score = " + this.Fscore);
+						data_tosave["shire"] = {"answer_list": this.Fscorelistdata, "total_score": totalscore, "score": this.Fscore};
+					},	
+		
+					xueyuresult: function(){
+						var xueyuqueslist = document.getElementById("xueyuqueslist");
+						var li_list = xueyuqueslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
+							}
+							if(parseInt(answervalue) == 0){
+								this.Gscorelistdata[i] = 1;
+							}
+							else{
+								if(this.xueyuqueslistdata[i].is_decrease == true){
+									this.Gscorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Gscorelistdata[i] = parseInt(answervalue);
+								}
+							}
+								
+							totalscore = totalscore + this.Gscorelistdata[i];					
+						}
+						console.log(this.Gscorelistdata);
+						this.Gscore = [(totalscore - len)/(len*4)]*100;
+						this.Gscore = this.Gscore.toFixed(1);
+						console.log("xuexu score = " + this.Gscore);
+						data_tosave["xueyu"] = {"answer_list": this.Gscorelistdata, "total_score": totalscore, "score": this.Gscore};
+					},	
+
+					qiyuresult: function(){
+						var qiyuqueslist = document.getElementById("qiyuqueslist");
+						var li_list = qiyuqueslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
+							}
+							if(parseInt(answervalue) == 0){
+								this.Hscorelistdata[i] = 1;
+							}else{
+								if(this.qiyuqueslistdata[i].is_decrease == true){
+									this.Hscorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Hscorelistdata[i] = parseInt(answervalue);
+								}
+							}
+								
+							totalscore = totalscore + this.Hscorelistdata[i];					
+						}
+						console.log(this.Hscorelistdata);
+						this.Hscore = [(totalscore - len)/(len*4)]*100;
+						this.Hscore = this.Hscore.toFixed(1);
+						console.log("qiyu score = " + this.Hscore);
+						data_tosave["qiyu"] = {"answer_list": this.Hscorelistdata, "total_score": totalscore, "score": this.Hscore};
+					},	
+
+					tebingresult: function(){
+						var tebingqueslist = document.getElementById("tebingqueslist");
+						var li_list = tebingqueslist.getElementsByTagName("li");
+						var totalscore = 0;
+						var len = li_list.length;
+						for( var i = 0; i < len; i ++ ){
+							var answervalue = 0;
+							for(var j = 0; j < 5; j++ ){
+								var tmp = li_list[i].childNodes[2+j*2].childNodes[0];
+								if(tmp.checked == true){
+									answervalue = tmp.value;	
+								}												
+							}
+							if(parseInt(answervalue) == 0){
+								this.Iscorelistdata[i] = 1;
+							}else{
+								if(this.tebingqueslistdata[i].is_decrease == true){
+									this.Iscorelistdata[i] = 6 - parseInt(answervalue);
+								}else{
+									this.Iscorelistdata[i] = parseInt(answervalue);
+								}
+							}
+								
+							totalscore = totalscore + this.Iscorelistdata[i];					
+						}
+						console.log(this.Iscorelistdata);
+						this.Iscore = [(totalscore - len)/(len*4)]*100;
+						this.Iscore = this.Iscore.toFixed(1);
+						console.log("tebing score = " + this.Iscore);
+						data_tosave["tebing"] = {"answer_list": this.Iscorelistdata, "total_score": totalscore, "score": this.Iscore};
+					},
+
+					compute: function (event) {
+						
+						this.pingheresult();
+						this.qixuresult();
+						this.yangxuresult();
+						this.yinxuresult();
+						this.tanxuresult();
+						this.shireresult();
+						this.xueyuresult();
+						this.qiyuresult();
+						this.tebingresult();
+						
+					   /*
+						this.Ascore = 20;
+						this.Bscore = 0;
+						this.Cscore = 30;
+						this.Dscore = 20;
+						this.Escore = 30;
+						this.Fscore = 0;
+						this.Gscore = 0;
+						this.Hscore = 0;
+						this.Iscore = 0;
+					   */
+						if(this.Bscore >= 40){
+							this.resultlist1.push("气虚质");
+						}else if((this.Bscore < 40)&&(this.Bscore >= 30)){
+							this.resultlist2.push("有气虚倾向");
+						}										
+						if(this.Cscore >= 40){
+							this.resultlist1.push("阳虚质");
+						}else if((this.Cscore < 40)&&(this.Cscore >= 30)){
+							this.resultlist2.push("有阳虚倾向");
+						}
+						if(this.Dscore >= 40){
+							this.resultlist1.push("阴虚质");
+						}else if((this.Dscore < 40)&&(this.Dscore >= 30)){
+							this.resultlist2.push("有阴虚倾向");
+						}
+						if(this.Escore >= 40){
+							this.resultlist1.push("痰湿质");
+						}else if((this.Escore < 40)&&(this.Escore >= 30)){
+							this.resultlist2.push("有痰湿倾向");
+						}
+						if(this.Fscore >= 40){
+							this.resultlist1.push("湿热质");
+						}else if((this.Fscore < 40)&&(this.Fscore >= 30)){
+							this.resultlist2.push("有湿热倾向");
+						}
+						if(this.Gscore >= 40){
+							this.resultlist1.push("血瘀质");
+						}else if((this.Gscore < 40)&&(this.Gscore >= 30)){
+							this.resultlist2.push("有血瘀倾向");
+						}		
+						if(this.Hscore >= 40){
+							this.resultlist1.push("气郁质");
+						}else if((this.Hscore < 40)&&(this.Hscore >= 30)){
+							this.resultlist2.push("有气郁倾向");
+						}	
+						if(this.Iscore >= 40){
+							this.resultlist1.push("特禀质");
+						}else if((this.Iscore < 40)&&(this.Iscore >= 30)){
+							this.resultlist2.push("有特禀倾向");
+						}		
+						
+						console.log(this.resultlist1);
+						console.log(this.resultlist2);
+						
+						if(this.resultlist1.length > 0){
+							for(var i = 0; i < this.resultlist1.length -1 ; i++){
+								this.result = this.result + this.resultlist1[i] + "，";
+							}
+							this.result = this.result + this.resultlist1[i];
+						}
+						else if((this.resultlist1.length == 0)&&(this.Ascore >= 60)&&(this.resultlist2.length == 0)){
+							this.result = "平和质"
+						}
+						else if((this.resultlist1.length == 0)&&(this.Ascore >= 60)&&(this.resultlist2.length > 0)){
+							this.result = "基本是平和质，"
+							for(var i = 0; i < this.resultlist2.length-1; i++){
+								this.result = this.result + this.resultlist2[i] + "，";
+							}
+							this.result = this.result + this.resultlist2[i];
+						}
+						else if((this.resultlist1.length == 0)&&(this.Ascore < 60)&&(this.resultlist2.length == 0)){
+							this.result = "非平和质"
+						}
+						else if((this.resultlist1.length == 0)&&(this.Ascore < 60)&&(this.resultlist2.length > 0)){
+							this.result = "非平和质，"
+							for(var i = 0; i < this.resultlist2.length - 1; i++){
+								this.result = this.result + this.resultlist2[i] + "，";
+							}
+							this.result = this.result + this.resultlist2[i];
+						}
+						
+						if (audio_upload_flag==1){
+							// console.log("上传音频完成");
+							data_tosave["res1"] = this.resultlist1;
+							data_tosave["res2"] = this.resultlist2;
+							data_tosave["res"] = this.result;
+							data_tosave["filename"] = uploadfilename+"ctmc.json";
+							console.log("data to save:");
+							console.log(data_tosave);
+							var jsonData = JSON.stringify(data_tosave);
+							console.log(jsonData);
+							var xhr = new XMLHttpRequest();
+							xhr.open("POST","/savectmcinfo",true);
+							xhr.setRequestHeader('Content-Type','application/json');
+							xhr.onreadystatechange = function(){
+								if (xhr.readyState === 4 && xhr.status === 200) {
+									var response = JSON.parse(xhr.responseText);
+									console.log(response);
+								}
+							};
+							xhr.send(jsonData);
+							console.log("上传信息完成");
+							alert("上传信息完成！");
+						}else{
+							console.log("先上传音频");
+							alert("先上传音频！");
+						}
+					},
+				}
+			})
+			
 		</script>
 	</body>
 </html>

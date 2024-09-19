@@ -26,6 +26,15 @@ run MySQL service.
 [XXX@localhost]$ systemctl start mysqld
 ```
 
+
+### CTM Collecting
+run flask server.
+```
+python3 ctmc_collect.py
+```
+open tizhidiaocha.html through 127.0.0.1:5002
+
+
 ### Repository System Diagnosis through Cough Sound Collecting
 run flask server.
 ```
@@ -42,20 +51,3 @@ sudo mysql -uroot -p
 > use {database name}
 >select * from {tablename}
 ```
-
-### CTM Collecting
-run flask server.
-```
-python3 ctmc_collect.py
-```
-open tizhidiaocha.html through 127.0.0.1:5002
-
-## Personal Website
-run flask server.
-```
-python3 myself.py
-```
-open myself.html through 127.0.0.1:80
-
-[Click to go to my personal website Ke Zhao](http://zkworkhome.top)
-

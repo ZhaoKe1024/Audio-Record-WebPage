@@ -446,7 +446,7 @@
 				var flag = false;
 				var submit_message = "";
 				// column 1 name
-				var data_name = parseInt(document.getElementById('fullname').value);
+				var data_name = document.getElementById('fullname').value;
 				if(data_name.length > 16 || data_age==''){
 					is_submit = false;
 					submit_message += "请正确输入您的姓名，长度不高于16的非空字符串。";
@@ -486,7 +486,9 @@
 					flag = false;
 					for(let i=0;i<each_attri.length;i++){
 						if (each_attri[i].checked == true){
-							condiData.append(condi_attris[j], each_attri[i].innerText);
+							// console.log(each_attri[i].innerText);
+							console.log(each_attri[i].value);
+							condiData.append(condi_attris[j], each_attri[i].value);
 							flag = true;
 						}
 					}
@@ -524,7 +526,7 @@
 					console.log(condiData);
 					var xhr = new XMLHttpRequest();
 					xhr.open('POST', '/saveconsinfo', true);
-					xhr.setRequestHeader('Content-Type','application/json');
+					// xhr.setRequestHeader('Content-Type','application/json');
 					// 不知道为啥，加上请求头就出错
 					// xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
 					xhr.onreadystatechange = function() {

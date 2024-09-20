@@ -53,8 +53,9 @@ def print_dcit():
         info_table = request.form
         json_tosave = {}
         for key in info_table:
-            print(key, '\t', info_table[key])
-            json_tosave[key] = info_table[key]
+            print(key)
+            print(info_table.get(key))
+            json_tosave[key] = info_table.get(key)
         new_json_string = json.dumps(json_tosave, ensure_ascii=False)  # 正常显示中文
         with open(save_dir + f"test_{info_table['filename']}.json", 'w', encoding='utf_8') as nf:
             nf.write(new_json_string)

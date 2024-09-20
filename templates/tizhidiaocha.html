@@ -191,7 +191,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -214,7 +214,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -237,7 +237,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -260,7 +260,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -283,7 +283,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -306,7 +306,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -329,7 +329,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -352,7 +352,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -375,7 +375,7 @@
 						<input  type="radio" v-bind:name=item.answerno value=2 >很少
 					</label>
 					<label class="radio-inline">
-						<input  type="radio" v-bind:name=item.answerno  value=3 >有事
+						<input  type="radio" v-bind:name=item.answerno  value=3 >有时
 					</label>
 					<label class="radio-inline">
 						<input type="radio" v-bind:name=item.answerno value=4 >经常
@@ -533,6 +533,7 @@
 						if (xhr.readyState === 4 && xhr.status === 200) {
 							var response = JSON.parse(xhr.responseText);
 							console.log(response);
+							alert("submit successfully!");
 						}
 					};
 					xhr.send(condiData);
@@ -545,7 +546,7 @@
 			//-------------------------------------// 
 			//--------------语音的采集--------------//
 			//-------------------------------------//
-			var audio_names = ["元音字母\'a\'", "元音字母\'e\'", "元音字母\'i\'", "元音字母\'o\'", "元音字母\'u\'", "mandarin", "五个四声元音字母a e i o u", "0.3s到2s的咳嗽声"];
+			var audio_names = ["元音字母a", "元音字母o", "元音字母e", "元音字母i", "元音字母u", "mandarin", "五个四声元音字母aeiou", "300ms到2000s的咳嗽声", "other", "other", "other", "other", "other", "other", "other", "other", "other", "other", "other"];
 			var audio_cnt = 0;
 			var selectedFile = null;
 			function onFileChange() {

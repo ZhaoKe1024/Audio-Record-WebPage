@@ -440,7 +440,7 @@
 				const minutes = ('0' + now.getMinutes()).slice(-2);
 				const seconds = ('0' + now.getSeconds()).slice(-2);
 				uploadfilename=year + month + day + hours + minutes + seconds;
-				condiData.append("filename", uploadfilename+"_condition.json");
+				condiData.append("filename", uploadfilename+"_condition");
 				
 				var is_submit = true;
 				var flag = false;
@@ -1115,7 +1115,7 @@
 							data_tosave["res1"] = this.resultlist1;
 							data_tosave["res2"] = this.resultlist2;
 							data_tosave["res"] = this.result;
-							data_tosave["filename"] = uploadfilename+"ctmc.json";
+							data_tosave["filename"] = uploadfilename+"ctmc";
 							console.log("data to save:");
 							console.log(data_tosave);
 							var jsonData = JSON.stringify(data_tosave);
